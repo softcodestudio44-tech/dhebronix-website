@@ -2365,3 +2365,754 @@ img {
     border-color: var(--primary);
     color: var(--text-white);
 }
+/* ===== FIXES - TEAM, MOBILE, EQUIPMENT ===== */
+
+/* ===== FIX: Team Grid - Show all members on desktop ===== */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    width: 100%;
+}
+
+.team-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: var(--transition);
+    text-align: center;
+    width: 100%;
+    display: block;
+}
+
+.team-card .team-image {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+    background: var(--darker-bg);
+}
+
+.team-card .team-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Fix broken team images - show placeholder */
+.team-card .team-image img[src=""],
+.team-card .team-image img:not([src]),
+.team-card .team-image img[src*="placeholder"] {
+    background: linear-gradient(135deg, var(--card-bg), var(--darker-bg));
+}
+
+.team-card .team-info {
+    padding: 20px;
+}
+
+.team-card .team-info h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.team-card .team-info p {
+    font-size: 13px;
+    color: var(--primary-light);
+}
+
+/* ===== FIX: Global Mobile - Prevent Horizontal Scroll ===== */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* ===== FIX: Equipment Cards - Full Display on Mobile ===== */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    width: 100%;
+}
+
+.product-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: var(--transition);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-image {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+    background: var(--darker-bg);
+    width: 100%;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.product-info {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-info .btn-product {
+    margin-top: auto;
+}
+
+/* ===== FIX: Portfolio/Events Cards ===== */
+.events-portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    width: 100%;
+}
+
+.portfolio-card {
+    width: 100%;
+    overflow: hidden;
+}
+
+/* ===== FIX: All Grids Overflow Prevention ===== */
+.services-grid,
+.events-grid,
+.testimonials-grid,
+.values-grid,
+.stats-grid,
+.blog-grid,
+.footer-grid {
+    width: 100%;
+    overflow: hidden;
+}
+
+/* ===== FIX: Hero Section Overflow ===== */
+.hero {
+    overflow: hidden;
+}
+
+.hero-content {
+    max-width: 100%;
+    padding: 0 20px;
+}
+
+.hero-title {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* ===== FIX: Page Header Overflow ===== */
+.page-header {
+    overflow: hidden;
+}
+
+.page-header h1 {
+    word-wrap: break-word;
+}
+
+/* ===== FIX: Navigation Overflow ===== */
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+}
+
+/* ===== FIX: Footer Overflow ===== */
+.footer {
+    overflow: hidden;
+}
+
+.footer-bottom {
+    flex-wrap: wrap;
+}
+
+/* ===== FIX: About Section Overflow ===== */
+.about-wrapper {
+    overflow: hidden;
+}
+
+.about-image img {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* ===== FIX: Why Us Section ===== */
+.why-us-wrapper {
+    overflow: hidden;
+}
+
+.why-us-image img {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* ===== FIX: CTA Section ===== */
+.cta-section {
+    overflow: hidden;
+}
+
+/* ===== FIX: Blog Layout Overflow ===== */
+.blog-layout {
+    overflow: hidden;
+}
+
+/* ===== FIX: Contact Wrapper ===== */
+.contact-wrapper {
+    overflow: hidden;
+}
+
+/* ===== FIX: Modal Overflow ===== */
+.event-modal .modal-content {
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* ===== FIX: Custom Inquiry Box ===== */
+.custom-inquiry {
+    overflow: hidden;
+}
+
+.inquiry-content .btn {
+    margin: 5px;
+}
+
+/* ============================================= */
+/* ===== RESPONSIVE FIXES - TABLET (1024px) ===== */
+/* ============================================= */
+@media (max-width: 1024px) {
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .events-portfolio-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .team-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .values-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .events-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .testimonials-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .why-us-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .about-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .blog-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================= */
+/* ===== RESPONSIVE FIXES - MOBILE (768px) ===== */
+/* ============================================= */
+@media (max-width: 768px) {
+    /* Prevent ALL horizontal scrolling */
+    html, body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden !important;
+    }
+
+    .container {
+        padding: 0 15px;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Navigation Fix */
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 280px;
+        max-width: 80%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.98);
+        flex-direction: column;
+        padding: 80px 30px 30px;
+        gap: 20px;
+        transition: all 0.3s ease;
+        border-left: 1px solid var(--border-color);
+        z-index: 1000;
+    }
+
+    .nav-links.active {
+        right: 0;
+    }
+
+    .nav-btn {
+        display: none;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    /* Hero Fix */
+    .hero {
+        min-height: 80vh;
+        padding: 100px 0 50px;
+    }
+
+    .hero-title {
+        font-size: 26px !important;
+        line-height: 1.3;
+    }
+
+    .hero-description {
+        font-size: 14px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .hero-buttons .btn {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+
+    /* Section Headers Fix */
+    .section {
+        padding: 50px 0;
+    }
+
+    .section-title {
+        font-size: 24px !important;
+    }
+
+    .section-subtitle {
+        font-size: 12px;
+    }
+
+    .section-description {
+        font-size: 14px;
+    }
+
+    /* Page Header Fix */
+    .page-header {
+        padding: 120px 0 60px;
+    }
+
+    .page-header h1 {
+        font-size: 28px !important;
+    }
+
+    /* ===== SERVICES - Stack on Mobile ===== */
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .service-card {
+        padding: 25px 20px;
+    }
+
+    /* ===== STATS - 2 columns on mobile ===== */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .stat-number {
+        font-size: 30px;
+    }
+
+    /* ===== EVENTS HOME - Stack on Mobile ===== */
+    .events-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    /* ===== WHY US - Stack on Mobile ===== */
+    .why-us-wrapper {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .why-us-image img {
+        height: 300px;
+    }
+
+    /* ===== TESTIMONIALS - Stack on Mobile ===== */
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    /* ===== CTA Fix ===== */
+    .cta-content h2 {
+        font-size: 24px !important;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .cta-buttons .btn {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+
+    /* ===== ABOUT PAGE - Stack on Mobile ===== */
+    .about-wrapper {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .about-image img {
+        height: 300px;
+    }
+
+    .about-experience {
+        position: relative;
+        bottom: auto;
+        right: auto;
+        text-align: center;
+        margin-top: -40px;
+        margin-left: auto;
+        margin-right: auto;
+        width: fit-content;
+    }
+
+    /* ===== TEAM - Full Width Cards on Mobile ===== */
+    .team-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px;
+    }
+
+    .team-card {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .team-card .team-image {
+        height: 280px;
+    }
+
+    /* ===== VALUES - Stack on Mobile ===== */
+    .values-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    /* ===== EVENTS PORTFOLIO - Full Width on Mobile ===== */
+    .events-portfolio-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px;
+    }
+
+    .portfolio-card {
+        width: 100%;
+    }
+
+    .portfolio-image {
+        height: 220px;
+    }
+
+    .portfolio-info {
+        padding: 15px;
+    }
+
+    .portfolio-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .portfolio-equipment {
+        flex-wrap: wrap;
+    }
+
+    /* Filter Buttons Fix */
+    .filter-buttons,
+    .equipment-filter {
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .filter-btn,
+    .equip-filter-btn {
+        padding: 8px 16px;
+        font-size: 12px;
+        flex: 0 0 auto;
+    }
+
+    /* ===== EQUIPMENT - Full Width Cards on Mobile ===== */
+    .products-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px;
+    }
+
+    .product-card {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .product-image {
+        height: 250px;
+    }
+
+    .product-info {
+        padding: 20px;
+    }
+
+    .product-info h3 {
+        font-size: 18px;
+    }
+
+    .product-specs {
+        font-size: 13px;
+    }
+
+    .price {
+        font-size: 22px;
+    }
+
+    .product-actions {
+        opacity: 1;
+    }
+
+    .product-badge {
+        font-size: 12px;
+        padding: 5px 14px;
+    }
+
+    .btn-product {
+        padding: 14px 20px;
+        font-size: 14px;
+    }
+
+    /* Custom Inquiry Fix */
+    .custom-inquiry {
+        padding: 25px 15px;
+    }
+
+    .inquiry-content h3 {
+        font-size: 18px;
+    }
+
+    .inquiry-content .btn {
+        display: block;
+        width: 100%;
+        margin: 8px 0;
+        text-align: center;
+    }
+
+    /* ===== BLOG - Stack on Mobile ===== */
+    .blog-layout {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .blog-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .blog-card.featured .blog-image {
+        height: 220px;
+    }
+
+    .blog-image {
+        height: 180px;
+    }
+
+    .blog-content h2 {
+        font-size: 18px;
+    }
+
+    .blog-content h3 {
+        font-size: 15px;
+    }
+
+    /* ===== CONTACT - Stack on Mobile ===== */
+    .contact-wrapper {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .contact-form-container h2 {
+        font-size: 22px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .social-links-large {
+        flex-wrap: wrap;
+    }
+
+    /* ===== FOOTER - Stack on Mobile ===== */
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 5px;
+        text-align: center;
+    }
+
+    /* ===== MAP Fix ===== */
+    .map-section iframe {
+        height: 250px;
+    }
+
+    /* ===== MODAL Fix ===== */
+    .event-modal .modal-content {
+        max-width: 95%;
+        margin: 10px;
+    }
+
+    .modal-content img {
+        height: 200px !important;
+    }
+}
+
+/* ============================================= */
+/* ===== RESPONSIVE FIXES - SMALL MOBILE (480px) ===== */
+/* ============================================= */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 12px;
+    }
+
+    .hero-title {
+        font-size: 22px !important;
+    }
+
+    .section-title {
+        font-size: 20px !important;
+    }
+
+    .page-header h1 {
+        font-size: 24px !important;
+    }
+
+    .logo-main {
+        font-size: 16px;
+    }
+
+    .logo-sub {
+        font-size: 7px;
+    }
+
+    .logo img {
+        height: 40px;
+        width: 40px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .stat-number {
+        font-size: 26px;
+    }
+
+    .stat-label {
+        font-size: 11px;
+    }
+
+    .team-card .team-image {
+        height: 250px;
+    }
+
+    .product-image {
+        height: 220px;
+    }
+
+    .price {
+        font-size: 20px;
+    }
+
+    .whatsapp-float {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+        bottom: 15px;
+        right: 15px;
+    }
+
+    .back-to-top {
+        width: 38px;
+        height: 38px;
+        bottom: 75px;
+        right: 18px;
+    }
+}

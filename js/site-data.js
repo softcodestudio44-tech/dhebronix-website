@@ -576,12 +576,18 @@ function loadTeamSection() {
     if (!grid || team.length === 0) return;
 
     grid.innerHTML = team.map(member => {
-        const image = member.image || 'https://via.placeholder.com/400x300/1a1a1a/8B1A1A?text=' + encodeURIComponent(member.name.split(' ')[0]);
+        // Better placeholder with initials
+        const initials = member.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+        const hasImage = member.image && member.image !== '' && !member.image.includes('placeholder');
+        
+        const imageHTML = hasImage 
+            ? `<img src="${member.image}" alt="${member.name}" onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#8B1A1A,#C41E3A);font-size:60px;font-weight:700;color:white;font-family:Orbitron,sans-serif;\\'>${initials}</div>'">`
+            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#8B1A1A,#C41E3A);font-size:60px;font-weight:700;color:white;font-family:Orbitron,sans-serif;">${initials}</div>`;
 
         return `
             <div class="team-card">
                 <div class="team-image">
-                    <img src="${image}" alt="${member.name}">
+                    ${imageHTML}
                     <div class="team-social">
                         ${member.linkedin ? `<a href="${member.linkedin}" target="_blank"><i class="fab fa-linkedin"></i></a>` : ''}
                         ${member.instagram ? `<a href="${member.instagram}" target="_blank"><i class="fab fa-instagram"></i></a>` : ''}
@@ -595,7 +601,6 @@ function loadTeamSection() {
         `;
     }).join('');
 }
-
 
 // ===================================================
 // ===== CONTACT PAGE DATA =====
