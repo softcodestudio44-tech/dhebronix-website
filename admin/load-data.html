@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load Data to Firebase | DHEBRONIX</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #0a0a0a; color: white; padding: 40px; }
+        h1 { color: #C41E3A; margin-bottom: 20px; }
+        .status { background: #111; border: 1px solid #222; border-radius: 10px; padding: 20px; margin: 10px 0; }
+        .status.success { border-color: #27ae60; }
+        .status.error { border-color: #e74c3c; }
+        .status.loading { border-color: #f39c12; }
+        button { padding: 15px 30px; background: linear-gradient(135deg, #8B1A1A, #C41E3A); color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; margin: 10px 5px; font-family: 'Poppins', sans-serif; }
+        button:hover { transform: translateY(-2px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        #log { background: #111; border: 1px solid #222; border-radius: 10px; padding: 20px; margin-top: 20px; max-height: 400px; overflow-y: auto; font-family: monospace; font-size: 13px; line-height: 1.8; }
+        .log-success { color: #27ae60; }
+        .log-error { color: #e74c3c; }
+        .log-info { color: #f39c12; }
+    </style>
+</head>
+<body>
+    <h1>📦 DHEBRONIX - Load Data to Firebase</h1>
+    <p style="color:#888;margin-bottom:20px;">This will upload all your existing website data to Firebase so it works on ALL devices.</p>
+
+    <button onclick="loadAllData()" id="loadBtn">🚀 Load ALL Data to Firebase</button>
+    <button onclick="loadEquipmentOnly()" id="equipBtn">🔊 Load Equipment Only</button>
+    <button onclick="loadEventsOnly()" id="eventsBtn">📅 Load Events Only</button>
+    <button onclick="loadBlogsOnly()" id="blogsBtn">📝 Load Blogs Only</button>
+    <button onclick="loadTestimonialsOnly()" id="testBtn">⭐ Load Testimonials Only</button>
+    <button onclick="loadTeamOnly()" id="teamBtn">👥 Load Team Only</button>
+    <button onclick="loadSettingsOnly()" id="settingsBtn">⚙️ Load Settings Only</button>
+
+    <div id="log"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAi1X6DplE5PwxgS_9274KqZKjGDrBDVQA",
+            authDomain: "dhebronix-website.firebaseapp.com",
+            projectId: "dhebronix-website",
+            storageBucket: "dhebronix-website.firebasestorage.app",
+            messagingSenderId: "236667482363",
+            appId: "1:236667482363:web:178fa15ad4e0d591c9405e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const logEl = document.getElementById('log');
+
+        function log(msg, type = 'info') {
+            logEl.innerHTML += `<div class="log-${type}">${new Date().toLocaleTimeString()} - ${msg}</div>`;
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        async function addDoc(collectionName, id, data) {
+            try {
+                await setDoc(doc(db, collectionName, id.toString()), data);
+                log(`✅ Added to ${collectionName}: ${data.title || data.name || id}`, 'success');
+                return true;
+            } catch (error) {
+                log(`❌ Error adding to ${collectionName}: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function checkExisting(collectionName) {
+            try {
+                const snapshot = await getDocs(collection(db, collectionName));
+                return snapshot.size;
+            } catch (error) {
+                return 0;
+            }
+        }
+
+        // ===== ALL DEFAULT DATA =====
+
+        const defaultEquipment = [
+            {
+                name: 'JBL EON 615',
+                category: 'speakers',
+                price: '450000',
+                oldPrice: '',
+                condition: 'new',
+                brand: 'JBL',
+                specs: '1000W, 15" Two-Way Active Speaker',
+                description: 'Professional powered PA speaker perfect for live events, conferences, and outdoor gatherings.',
+                available: true,
+                images: ['https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=400&q=80'],
+                createdAt: new Date().toISOString()
+            },
+            {
+                name: 'Yamaha MG20XU',
+                category: 'mixers',
+                price: '380000',
+                oldPrice: '',
+                condition: 'new',
+                brand: 'Yamaha',
+                specs: '20-Channel Mixing Console with USB & Effects',
+                description: 'Professional mixing console with built-in SPX effects and USB audio interface.',
+                available: true,
+                images: ['https://images.unsplash.com/photo-1598653222000-6b7b7a552625?auto=format&fit=crop&w=400&q=80'],
+                createdAt: new Date().toISOString()
+            },
+            {
+                name: 'Shure SM58',
+                category: 'microphones',
+                price: '65000',
+                oldPrice: '',
+                condition: 'new',
+                brand: 'Shure',
+                specs: 'Dynamic Vocal Microphone - Industry Standard',
+                description: 'The world\'s most popular vocal microphone. Extremely durable.',
+                available: true,
+                images: ['https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=400&q=80'],
+                createdAt: new Date().toISOString()
+            },
+            {
+                name: 'Crown XLS 2502',
+                category: 'amplifiers',
+                price: '250000',
+                oldPrice: '350000',
+                condition: 'used',
+                brand: 'Crown',
+                specs: '2-Channel 775W Power Amplifier',
+                description: 'High-performance power amplifier. Lightweight and efficient.',
+                available: true,
+                images: ['https://images.unsplash.com/photo-1558618666-fcd25c85f82e?auto=format&fit=crop&w=400&q=80'],
+                createdAt: new Date().toISOString()
+            },
+            {
+                name: 'LED Par Stage Lights (Set of 4)',
+                category: 'lighting',
+                price: '120000',
+                oldPrice: '',
+                condition: 'new',
+                brand: 'Generic',
+                specs: '36 LED RGBW Par Can, DMX512 Control',
+                description: 'Professional LED par lights with RGBW color mixing and DMX control.',
+                available: true,
+                images: ['https://images.unsplash.com/photo-1504509546545-e000b4a62425?auto=format&fit=crop&w=400&q=80'],
+                createdAt: new Date().toISOString()
+            },
+            {
+                name: 'XLR Cable Bundle (10-Pack)',
+                category: 'accessories',
+                price: '85000',
+                oldPrice: '',
+                condition: 'new',
+                brand: 'Pro Audio',
+                specs: '25ft Professional XLR Cables, Gold Plated',
+                description: 'Professional-grade XLR cables with gold-plated connectors.',
+                available: true,
+                images: ['https://images.unsplash.com/photo-1563330232-57114bb0823c?auto=format&fit=crop&w=400&q=80'],
+                createdAt: new Date().toISOString()
+            },
+            {
+                name: 'JBL SRX818SP Subwoofer',
+                category: 'speakers',
+                price: '650000',
+                oldPrice: '',
+                condition: 'new',
+                brand: 'JBL',
+                specs: '18" 1000W Powered Subwoofer',
+                description: 'High-powered subwoofer delivering deep bass for concerts and large events.',
+                available: true,
+                images: ['https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=400&q=80'],
+                createdAt: new Date().toISOString()
+            },
+            {
+                name: 'Sennheiser EW 100 G4',
+                category: 'microphones',
+                price: '280000',
+                oldPrice: '',
+                condition: 'new',
+                brand: 'Sennheiser',
+                specs: 'Wireless Handheld Microphone System',
+                description: 'Professional wireless microphone with reliable RF performance.',
+                available: true,
+                images: ['https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=400&q=80'],
+                createdAt: new Date().toISOString()
+            },
+            {
+                name: '230W Moving Head Beam (Pair)',
+                category: 'lighting',
+                price: '150000',
+                oldPrice: '200000',
+                condition: 'used',
+                brand: 'Generic',
+                specs: '7R Sharpy Beam, DMX512, 16 Prism',
+                description: 'Professional moving head beam lights with sharp beam effects.',
+                available: true,
+                images: ['https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=400&q=80'],
+                createdAt: new Date().toISOString()
+            }
+        ];
+
+        const defaultEvents = [
+            {
+                title: 'Afrobeats Live Concert',
+                category: 'concert',
+                date: '2025-01-15',
+                venue: 'Eko Convention Center, Lagos',
+                guests: '2000+',
+                equipment: '12 Speakers, 8 Monitors, Digital Mixer, Stage Lights',
+                description: 'A massive Afrobeats concert featuring top Nigerian artists with full sound engineering.',
+                testimonial: '',
+                images: ['https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=600&q=80'],
+                createdAt: new Date().toISOString()
+            },
+            {
+                title: 'Johnson Wedding Reception',
+                category: 'wedding',
+                date: '2024-12-20',
+                venue: 'Landmark Event Center, Lagos',
+                guests: '500',
+                equipment: '6 Speakers, Wireless Mics, LED Lights',
+                description: 'Elegant wedding reception with crystal-clear sound and wireless microphones for speeches.',
+                testimonial: 'DHEBRONIX made our wedding reception absolutely perfect!',
+                images: ['https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=600&q=80'],
+                createdAt: new Date().toISOString()
+            },
+            {
+                title: 'Annual Tech Conference',
+                category: 'corporate',
+                date: '2024-11-10',
+                venue: 'Transcorp Hilton, Abuja',
+                guests: '300',
+                equipment: 'Line Array, Podium Mic, Projector',
+                description: 'Professional corporate conference setup with clear audio for speakers and panels.',
+                testimonial: '',
+                images: ['https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=600&q=80'],
+                createdAt: new Date().toISOString()
+            },
+            {
+                title: 'Praise Night Concert',
+                category: 'church',
+                date: '2024-10-05',
+                venue: 'Redemption Camp, Lagos',
+                guests: '1000+',
+                equipment: '10 Speakers, 6 Monitors, Band Setup',
+                description: 'Powerful praise and worship night with full band setup and immersive audio.',
+                testimonial: '',
+                images: ['https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&w=600&q=80'],
+                createdAt: new Date().toISOString()
+            },
+            {
+                title: '50th Birthday Celebration',
+                category: 'party',
+                date: '2024-09-15',
+                venue: 'Oriental Hotel, Lagos',
+                guests: '200',
+                equipment: '4 Speakers, DJ Setup, Uplighting',
+                description: 'Intimate birthday celebration with professional DJ setup and ambient lighting.',
+                testimonial: '',
+                images: ['https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=600&q=80'],
+                createdAt: new Date().toISOString()
+            },
+            {
+                title: 'Okafor Royal Wedding',
+                category: 'wedding',
+                date: '2024-08-08',
+                venue: 'Ibadan, Oyo State',
+                guests: '800',
+                equipment: '8 Speakers, Wireless Mics, Moving Lights',
+                description: 'Grand traditional and white wedding celebration with full sound coverage.',
+                testimonial: '',
+                images: ['https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=600&q=80'],
+                createdAt: new Date().toISOString()
+            }
+        ];
+
+        const defaultBlogs = [
+            {
+                title: 'How to Choose the Right Sound System for Your Wedding',
+                category: 'sound-tips',
+                author: 'DHEBRONIX Team',
+                date: '2025-02-15',
+                content: 'Planning your dream wedding? The sound system is one of the most important elements. From the first dance to the last song, here is everything you need to know about selecting the perfect audio setup for your big day. Consider the venue size, guest count, and whether you need both ceremony and reception coverage.',
+                excerpt: 'Planning your dream wedding? The sound system is one of the most important elements that can make or break your reception.',
+                tags: 'wedding, sound, tips',
+                image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=800&q=80',
+                status: 'published',
+                createdAt: new Date().toISOString()
+            },
+            {
+                title: 'Top 5 Sound Engineering Mistakes to Avoid at Live Events',
+                category: 'sound-tips',
+                author: 'DHEBRONIX Team',
+                date: '2025-02-10',
+                content: 'Even experienced sound engineers make these common mistakes. From feedback issues to improper gain staging, learn how to avoid them and deliver flawless audio at every event.',
+                excerpt: 'Even experienced sound engineers make these common mistakes. Learn how to avoid them.',
+                tags: 'sound engineering, mistakes, tips',
+                image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80',
+                status: 'published',
+                createdAt: new Date().toISOString()
+            },
+            {
+                title: 'Behind the Scenes: Setting Up for a 500-Person Conference',
+                category: 'behind-scenes',
+                author: 'DHEBRONIX Team',
+                date: '2025-02-05',
+                content: 'Take a look at what goes into preparing sound for a major corporate conference from start to finish. Planning, equipment selection, setup, soundcheck, and live management.',
+                excerpt: 'Take a look at what goes into preparing sound for a major corporate conference.',
+                tags: 'corporate, conference, setup',
+                image: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=800&q=80',
+                status: 'published',
+                createdAt: new Date().toISOString()
+            },
+            {
+                title: 'Equipment Maintenance Tips for Longevity',
+                category: 'maintenance',
+                author: 'DHEBRONIX Team',
+                date: '2025-01-28',
+                content: 'Your sound equipment is an investment. Here is how to properly maintain speakers, mixers, microphones and cables to ensure they last for years.',
+                excerpt: 'Your sound equipment is an investment. Here is how to properly maintain it.',
+                tags: 'maintenance, equipment, tips',
+                image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?auto=format&fit=crop&w=800&q=80',
+                status: 'published',
+                createdAt: new Date().toISOString()
+            }
+        ];
+
+        const defaultTestimonials = [
+            {
+                name: 'Adebayo & Funke Johnson',
+                event: 'Wedding Reception',
+                rating: '5',
+                text: 'DHEBRONIX made our wedding reception absolutely perfect! The sound quality was incredible and the team was so professional. Highly recommended!',
+                createdAt: new Date().toISOString()
+            },
+            {
+                name: 'Chidera Okafor',
+                event: 'GTBank Corporate Event',
+                rating: '5',
+                text: 'We have used DHEBRONIX for all our corporate events. Their attention to detail and professionalism is unmatched. The sound is always crystal clear.',
+                createdAt: new Date().toISOString()
+            },
+            {
+                name: 'Pastor Emmanuel Ade',
+                event: 'Church Concert',
+                rating: '5',
+                text: 'Amazing concert setup! 500+ guests and every person could hear perfectly. DHEBRONIX are true professionals who know their craft.',
+                createdAt: new Date().toISOString()
+            }
+        ];
+
+        const defaultTeam = [
+            {
+                name: 'Adebowale Prince Aderibigbe',
+                role: 'Founder & Lead Sound Engineer',
+                linkedin: '',
+                instagram: '',
+                bio: 'Founder and lead sound engineer with over 10 years of experience in professional sound engineering and multimedia production.',
+                image: '',
+                createdAt: new Date().toISOString()
+            }
+        ];
+
+        const defaultSettings = {
+            name: 'DHEBRONIX Multimedia Company',
+            phone: '+234 801 234 5678',
+            email: 'info@dhebronix.com',
+            address: 'Lagos, Nigeria',
+            whatsapp: '+2348012345678'
+        };
+
+        const defaultSocial = {
+            facebook: 'https://facebook.com/dhebronix',
+            instagram: 'https://instagram.com/dhebronix',
+            youtube: 'https://youtube.com/dhebronix',
+            twitter: 'https://twitter.com/dhebronix'
+        };
+
+        // ===== LOAD FUNCTIONS =====
+
+        async function loadEquipment() {
+            log('Loading equipment...', 'info');
+            for (let i = 0; i < defaultEquipment.length; i++) {
+                await addDoc('equipment', `equip_${1001 + i}`, defaultEquipment[i]);
+            }
+            log(`✅ ${defaultEquipment.length} equipment items loaded!`, 'success');
+        }
+
+        async function loadEvents() {
+            log('Loading events...', 'info');
+            for (let i = 0; i < defaultEvents.length; i++) {
+                await addDoc('events', `event_${2001 + i}`, defaultEvents[i]);
+            }
+            log(`✅ ${defaultEvents.length} events loaded!`, 'success');
+        }
+
+        async function loadBlogs() {
+            log('Loading blog posts...', 'info');
+            for (let i = 0; i < defaultBlogs.length; i++) {
+                await addDoc('blogs', `blog_${3001 + i}`, defaultBlogs[i]);
+            }
+            log(`✅ ${defaultBlogs.length} blog posts loaded!`, 'success');
+        }
+
+        async function loadTestimonials() {
+            log('Loading testimonials...', 'info');
+            for (let i = 0; i < defaultTestimonials.length; i++) {
+                await addDoc('testimonials', `test_${4001 + i}`, defaultTestimonials[i]);
+            }
+            log(`✅ ${defaultTestimonials.length} testimonials loaded!`, 'success');
+        }
+
+        async function loadTeam() {
+            log('Loading team members...', 'info');
+            for (let i = 0; i < defaultTeam.length; i++) {
+                await addDoc('team', `team_${5001 + i}`, defaultTeam[i]);
+            }
+            log(`✅ ${defaultTeam.length} team members loaded!`, 'success');
+        }
+
+        async function loadSettings() {
+            log('Loading settings...', 'info');
+            await addDoc('settings', 'company', defaultSettings);
+            await addDoc('settings', 'social', defaultSocial);
+            log('✅ Settings and social links loaded!', 'success');
+        }
+
+        // ===== BUTTON HANDLERS =====
+
+        window.loadAllData = async function() {
+            document.getElementById('loadBtn').disabled = true;
+            document.getElementById('loadBtn').textContent = '⏳ Loading...';
+            log('========================================', 'info');
+            log('🚀 Starting FULL data load to Firebase...', 'info');
+            log('========================================', 'info');
+
+            await loadEquipment();
+            await loadEvents();
+            await loadBlogs();
+            await loadTestimonials();
+            await loadTeam();
+            await loadSettings();
+
+            log('========================================', 'success');
+            log('🎉 ALL DATA LOADED SUCCESSFULLY!', 'success');
+            log('You can now close this page and check your website.', 'success');
+            log('========================================', 'success');
+
+            document.getElementById('loadBtn').textContent = '✅ ALL Data Loaded!';
+        };
+
+        window.loadEquipmentOnly = async function() {
+            document.getElementById('equipBtn').disabled = true;
+            await loadEquipment();
+            document.getElementById('equipBtn').textContent = '✅ Equipment Loaded!';
+        };
+
+        window.loadEventsOnly = async function() {
+            document.getElementById('eventsBtn').disabled = true;
+            await loadEvents();
+            document.getElementById('eventsBtn').textContent = '✅ Events Loaded!';
+        };
+
+        window.loadBlogsOnly = async function() {
+            document.getElementById('blogsBtn').disabled = true;
+            await loadBlogs();
+            document.getElementById('blogsBtn').textContent = '✅ Blogs Loaded!';
+        };
+
+        window.loadTestimonialsOnly = async function() {
+            document.getElementById('testBtn').disabled = true;
+            await loadTestimonials();
+            document.getElementById('testBtn').textContent = '✅ Testimonials Loaded!';
+        };
+
+        window.loadTeamOnly = async function() {
+            document.getElementById('teamBtn').disabled = true;
+            await loadTeam();
+            document.getElementById('teamBtn').textContent = '✅ Team Loaded!';
+        };
+
+        window.loadSettingsOnly = async function() {
+            document.getElementById('settingsBtn').disabled = true;
+            await loadSettings();
+            document.getElementById('settingsBtn').textContent = '✅ Settings Loaded!';
+        };
+
+        // Check existing data
+        log('Checking existing Firebase data...', 'info');
+        const counts = {
+            equipment: await checkExisting('equipment'),
+            events: await checkExisting('events'),
+            blogs: await checkExisting('blogs'),
+            testimonials: await checkExisting('testimonials'),
+            team: await checkExisting('team')
+        };
+
+        log(`Current data in Firebase:`, 'info');
+        log(`  Equipment: ${counts.equipment} items`, counts.equipment > 0 ? 'success' : 'error');
+        log(`  Events: ${counts.events} items`, counts.events > 0 ? 'success' : 'error');
+        log(`  Blogs: ${counts.blogs} items`, counts.blogs > 0 ? 'success' : 'error');
+        log(`  Testimonials: ${counts.testimonials} items`, counts.testimonials > 0 ? 'success' : 'error');
+        log(`  Team: ${counts.team} items`, counts.team > 0 ? 'success' : 'error');
+        log('Ready! Click a button to load data.', 'info');
+    </script>
+</body>
+</html>
