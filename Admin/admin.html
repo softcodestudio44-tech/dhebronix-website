@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | DHEBRONIX</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+    <!-- CHECK LOGIN -->
+    <script>
+        if (localStorage.getItem('dhebronix_admin_logged_in') !== 'true') {
+            window.location.href = 'admin-login.html';
+        }
+    </script>
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="Logo" class="sidebar-logo">
+            <div>
+                <h3>DHEBRONIX</h3>
+                <span>Admin Panel</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="sidebar-link active" data-page="dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="#" class="sidebar-link" data-page="events">
+                <i class="fas fa-calendar-alt"></i> Events & Setups
+            </a>
+            <a href="#" class="sidebar-link" data-page="equipment">
+                <i class="fas fa-volume-up"></i> Equipment
+            </a>
+            <a href="#" class="sidebar-link" data-page="blog">
+                <i class="fas fa-blog"></i> Blog Posts
+            </a>
+            <a href="#" class="sidebar-link" data-page="gallery">
+                <i class="fas fa-images"></i> Image Gallery
+            </a>
+            <a href="#" class="sidebar-link" data-page="testimonials">
+                <i class="fas fa-quote-right"></i> Testimonials
+            </a>
+            <a href="#" class="sidebar-link" data-page="team">
+                <i class="fas fa-users"></i> Team Members
+            </a>
+            <a href="#" class="sidebar-link" data-page="messages">
+                <i class="fas fa-envelope"></i> Messages
+            </a>
+            <a href="#" class="sidebar-link" data-page="settings">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#" id="logoutBtn" class="sidebar-link logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+        <!-- TOP BAR -->
+        <header class="admin-topbar">
+            <div class="topbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h2 id="pageTitle">Dashboard</h2>
+            </div>
+            <div class="topbar-right">
+                <a href="../index.html" target="_blank" class="topbar-btn">
+                    <i class="fas fa-external-link-alt"></i> View Site
+                </a>
+                <div class="admin-user">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="adminName">Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- PAGE CONTENT AREA -->
+        <div class="admin-content">
+
+            <!-- ===== DASHBOARD PAGE ===== -->
+            <div class="admin-page active" id="page-dashboard">
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="background:#8B1A1A;"><i class="fas fa-calendar-check"></i></div>
+                        <div class="stat-card-info">
+                            <h3 id="totalEvents">0</h3>
+                            <p>Total Events</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="background:#27ae60;"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="stat-card-info">
+                            <h3 id="totalProducts">0</h3>
+                            <p>Equipment Items</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="background:#2980b9;"><i class="fas fa-blog"></i></div>
+                        <div class="stat-card-info">
+                            <h3 id="totalBlogs">0</h3>
+                            <p>Blog Posts</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="background:#f39c12;"><i class="fas fa-envelope"></i></div>
+                        <div class="stat-card-info">
+                            <h3 id="totalMessages">0</h3>
+                            <p>Messages</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-clock"></i> Recent Activity</h3>
+                        <div class="activity-list" id="activityList">
+                            <div class="activity-item">
+                                <i class="fas fa-plus-circle" style="color:#27ae60;"></i>
+                                <p>Welcome to DHEBRONIX Admin Dashboard!</p>
+                                <span>Just now</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                        <div class="quick-actions">
+                            <button class="quick-action-btn" onclick="navigateTo('events')">
+                                <i class="fas fa-plus"></i> Add Event
+                            </button>
+                            <button class="quick-action-btn" onclick="navigateTo('equipment')">
+                                <i class="fas fa-plus"></i> Add Equipment
+                            </button>
+                            <button class="quick-action-btn" onclick="navigateTo('blog')">
+                                <i class="fas fa-plus"></i> Write Blog Post
+                            </button>
+                            <button class="quick-action-btn" onclick="navigateTo('gallery')">
+                                <i class="fas fa-upload"></i> Upload Images
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== EVENTS PAGE ===== -->
+            <div class="admin-page" id="page-events">
+                <div class="page-actions">
+                    <h3>Manage Events & Setups</h3>
+                    <button class="add-btn" onclick="showForm('eventForm')">
+                        <i class="fas fa-plus"></i> Add New Event
+                    </button>
+                </div>
+
+                <!-- ADD/EDIT EVENT FORM -->
+                <div class="admin-form-container" id="eventForm" style="display:none;">
+                    <h3 id="eventFormTitle"><i class="fas fa-calendar-plus"></i> Add New Event</h3>
+                    <form id="addEventForm">
+                        <div class="form-grid">
+                            <div class="admin-field">
+                                <label>Event Title *</label>
+                                <input type="text" id="eventTitle" placeholder="e.g., Johnson Wedding Reception" required>
+                            </div>
+                            <div class="admin-field">
+                                <label>Category *</label>
+                                <select id="eventCategory" required>
+                                    <option value="">Select Category</option>
+                                    <option value="wedding">Wedding</option>
+                                    <option value="corporate">Corporate</option>
+                                    <option value="concert">Concert</option>
+                                    <option value="church">Church</option>
+                                    <option value="party">Party</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="admin-field">
+                                <label>Event Date *</label>
+                                <input type="date" id="eventDate" required>
+                            </div>
+                            <div class="admin-field">
+                                <label>Venue / Location *</label>
+                                <input type="text" id="eventVenue" placeholder="e.g., Eko Convention Center, Lagos" required>
+                            </div>
+                            <div class="admin-field">
+                                <label>Number of Guests</label>
+                                <input type="text" id="eventGuests" placeholder="e.g., 500">
+                            </div>
+                            <div class="admin-field">
+                                <label>Equipment Used</label>
+                                <input type="text" id="eventEquipment" placeholder="e.g., 6 Speakers, Wireless Mics, LED Lights">
+                            </div>
+                        </div>
+                        <div class="admin-field">
+                            <label>Description</label>
+                            <textarea id="eventDescription" rows="4" placeholder="Describe the event..."></textarea>
+                        </div>
+                        <div class="admin-field">
+                            <label>Event Images</label>
+                            <div class="image-upload-area" id="eventImageUpload">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Click to upload or drag images here</p>
+                                <input type="file" id="eventImages" multiple accept="image/*">
+                            </div>
+                            <div class="image-preview" id="eventImagePreview"></div>
+                        </div>
+                        <div class="admin-field">
+                            <label>Client Testimonial (Optional)</label>
+                            <textarea id="eventTestimonial" rows="2" placeholder="What did the client say about the event?"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="save-btn"><i class="fas fa-save"></i> Save Event</button>
+                            <button type="button" class="cancel-btn" onclick="hideForm('eventForm')"><i class="fas fa-times"></i> Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- EVENTS LIST -->
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Event Title</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Venue</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventsTableBody">
+                            <!-- Events will be loaded here by JavaScript -->
+                        </tbody>
+                    </table>
+                    <p class="empty-message" id="eventsEmpty">No events added yet. Click "Add New Event" to get started!</p>
+                </div>
+            </div>
+
+            <!-- ===== EQUIPMENT PAGE ===== -->
+            <div class="admin-page" id="page-equipment">
+                <div class="page-actions">
+                    <h3>Manage Equipment</h3>
+                    <button class="add-btn" onclick="showForm('equipmentForm')">
+                        <i class="fas fa-plus"></i> Add New Equipment
+                    </button>
+                </div>
+
+                <!-- ADD EQUIPMENT FORM -->
+                <div class="admin-form-container" id="equipmentForm" style="display:none;">
+                    <h3><i class="fas fa-volume-up"></i> Add New Equipment</h3>
+                    <form id="addEquipmentForm">
+                        <div class="form-grid">
+                            <div class="admin-field">
+                                <label>Product Name *</label>
+                                <input type="text" id="productName" placeholder="e.g., JBL EON 615" required>
+                            </div>
+                            <div class="admin-field">
+                                <label>Category *</label>
+                                <select id="productCategory" required>
+                                    <option value="">Select Category</option>
+                                    <option value="speakers">Speakers</option>
+                                    <option value="mixers">Mixers</option>
+                                    <option value="microphones">Microphones</option>
+                                    <option value="amplifiers">Amplifiers</option>
+                                    <option value="lighting">Lighting</option>
+                                    <option value="accessories">Accessories</option>
+                                </select>
+                            </div>
+                            <div class="admin-field">
+                                <label>Price (₦) *</label>
+                                <input type="number" id="productPrice" placeholder="e.g., 450000" required>
+                            </div>
+                            <div class="admin-field">
+                                <label>Old Price (₦) - If on sale</label>
+                                <input type="number" id="productOldPrice" placeholder="e.g., 500000">
+                            </div>
+                            <div class="admin-field">
+                                <label>Condition *</label>
+                                <select id="productCondition" required>
+                                    <option value="new">New</option>
+                                    <option value="used">Used</option>
+                                    <option value="refurbished">Refurbished</option>
+                                </select>
+                            </div>
+                            <div class="admin-field">
+                                <label>Brand</label>
+                                <input type="text" id="productBrand" placeholder="e.g., JBL, Yamaha, Shure">
+                            </div>
+                        </div>
+                        <div class="admin-field">
+                            <label>Specifications</label>
+                            <input type="text" id="productSpecs" placeholder="e.g., 1000W, 15 inch Two-Way Active Speaker">
+                        </div>
+                        <div class="admin-field">
+                            <label>Description</label>
+                            <textarea id="productDescription" rows="3" placeholder="Full product description..."></textarea>
+                        </div>
+                        <div class="admin-field">
+                            <label>Product Images</label>
+                            <div class="image-upload-area" id="productImageUpload">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Click to upload or drag images here</p>
+                                <input type="file" id="productImages" multiple accept="image/*">
+                            </div>
+                            <div class="image-preview" id="productImagePreview"></div>
+                        </div>
+                        <div class="admin-field">
+                            <label>
+                                <input type="checkbox" id="productAvailable" checked> Available for sale
+                            </label>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="save-btn"><i class="fas fa-save"></i> Save Equipment</button>
+                            <button type="button" class="cancel-btn" onclick="hideForm('equipmentForm')"><i class="fas fa-times"></i> Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- EQUIPMENT LIST -->
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Condition</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="equipmentTableBody"></tbody>
+                    </table>
+                    <p class="empty-message" id="equipmentEmpty">No equipment added yet. Click "Add New Equipment" to get started!</p>
+                </div>
+            </div>
+
+            <!-- ===== BLOG PAGE ===== -->
+            <div class="admin-page" id="page-blog">
+                <div class="page-actions">
+                    <h3>Manage Blog Posts</h3>
+                    <button class="add-btn" onclick="showForm('blogForm')">
+                        <i class="fas fa-plus"></i> Write New Post
+                    </button>
+                </div>
+
+                <!-- ADD BLOG FORM -->
+                <div class="admin-form-container" id="blogForm" style="display:none;">
+                    <h3><i class="fas fa-pen-fancy"></i> Write New Blog Post</h3>
+                    <form id="addBlogForm">
+                        <div class="form-grid">
+                            <div class="admin-field">
+                                <label>Post Title *</label>
+                                <input type="text" id="blogTitle" placeholder="e.g., How to Choose the Right Sound System" required>
+                            </div>
+                            <div class="admin-field">
+                                <label>Category *</label>
+                                <select id="blogCategory" required>
+                                    <option value="">Select Category</option>
+                                    <option value="sound-tips">Sound Tips</option>
+                                    <option value="equipment">Equipment Reviews</option>
+                                    <option value="events">Event Planning</option>
+                                    <option value="behind-scenes">Behind the Scenes</option>
+                                    <option value="industry">Industry News</option>
+                                    <option value="maintenance">Maintenance</option>
+                                </select>
+                            </div>
+                            <div class="admin-field">
+                                <label>Author</label>
+                                <input type="text" id="blogAuthor" value="DHEBRONIX Team">
+                            </div>
+                            <div class="admin-field">
+                                <label>Publish Date</label>
+                                <input type="date" id="blogDate">
+                            </div>
+                        </div>
+                        <div class="admin-field">
+                            <label>Featured Image</label>
+                            <div class="image-upload-area" id="blogImageUpload">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Click to upload featured image</p>
+                                <input type="file" id="blogImage" accept="image/*">
+                            </div>
+                            <div class="image-preview" id="blogImagePreview"></div>
+                        </div>
+                        <div class="admin-field">
+                            <label>Post Content *</label>
+                            <div class="editor-toolbar">
+                                <button type="button" onclick="formatText('bold')"><i class="fas fa-bold"></i></button>
+                                <button type="button" onclick="formatText('italic')"><i class="fas fa-italic"></i></button>
+                                <button type="button" onclick="formatText('underline')"><i class="fas fa-underline"></i></button>
+                                <button type="button" onclick="formatText('h2')">H2</button>
+                                <button type="button" onclick="formatText('h3')">H3</button>
+                                <button type="button" onclick="formatText('ul')"><i class="fas fa-list-ul"></i></button>
+                                <button type="button" onclick="formatText('link')"><i class="fas fa-link"></i></button>
+                            </div>
+                            <textarea id="blogContent" rows="12" placeholder="Write your blog post content here..." required></textarea>
+                        </div>
+                        <div class="admin-field">
+                            <label>Short Excerpt</label>
+                            <textarea id="blogExcerpt" rows="2" placeholder="A short summary of the post (shown in blog listing)..."></textarea>
+                        </div>
+                        <div class="admin-field">
+                            <label>Tags (comma separated)</label>
+                            <input type="text" id="blogTags" placeholder="e.g., sound, wedding, tips, equipment">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="save-btn"><i class="fas fa-save"></i> Publish Post</button>
+                            <button type="button" class="draft-btn" onclick="saveDraft()"><i class="fas fa-file-alt"></i> Save as Draft</button>
+                            <button type="button" class="cancel-btn" onclick="hideForm('blogForm')"><i class="fas fa-times"></i> Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- BLOG LIST -->
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Author</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="blogTableBody"></tbody>
+                    </table>
+                    <p class="empty-message" id="blogEmpty">No blog posts yet. Click "Write New Post" to get started!</p>
+                </div>
+            </div>
+
+            <!-- ===== IMAGE GALLERY PAGE ===== -->
+            <div class="admin-page" id="page-gallery">
+                <div class="page-actions">
+                    <h3>Image Gallery</h3>
+                    <button class="add-btn" onclick="document.getElementById('galleryUpload').click()">
+                        <i class="fas fa-upload"></i> Upload Images
+                    </button>
+                    <input type="file" id="galleryUpload" multiple accept="image/*" style="display:none;">
+                </div>
+
+                <div class="gallery-grid" id="galleryGrid">
+                    <div class="gallery-upload-card" onclick="document.getElementById('galleryUpload').click()">
+                        <i class="fas fa-plus"></i>
+                        <p>Upload Images</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TESTIMONIALS PAGE ===== -->
+            <div class="admin-page" id="page-testimonials">
+                <div class="page-actions">
+                    <h3>Manage Testimonials</h3>
+                    <button class="add-btn" onclick="showForm('testimonialForm')">
+                        <i class="fas fa-plus"></i> Add Testimonial
+                    </button>
+                </div>
+
+                <div class="admin-form-container" id="testimonialForm" style="display:none;">
+                    <h3><i class="fas fa-quote-right"></i> Add New Testimonial</h3>
+                    <form id="addTestimonialForm">
+                        <div class="form-grid">
+                            <div class="admin-field">
+                                <label>Client Name *</label>
+                                <input type="text" id="testimonialName" placeholder="e.g., Adebayo Johnson" required>
+                            </div>
+                            <div class="admin-field">
+                                <label>Event Type *</label>
+                                <input type="text" id="testimonialEvent" placeholder="e.g., Wedding Reception" required>
+                            </div>
+                            <div class="admin-field">
+                                <label>Rating *</label>
+                                <select id="testimonialRating" required>
+                                    <option value="5">⭐⭐⭐⭐⭐ (5 Stars)</option>
+                                    <option value="4">⭐⭐⭐⭐ (4 Stars)</option>
+                                    <option value="3">⭐⭐⭐ (3 Stars)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="admin-field">
+                            <label>Testimonial Text *</label>
+                            <textarea id="testimonialText" rows="4" placeholder="What did the client say..." required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="save-btn"><i class="fas fa-save"></i> Save</button>
+                            <button type="button" class="cancel-btn" onclick="hideForm('testimonialForm')"><i class="fas fa-times"></i> Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>Event</th>
+                                <th>Rating</th>
+                                <th>Testimonial</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="testimonialTableBody"></tbody>
+                    </table>
+                    <p class="empty-message" id="testimonialEmpty">No testimonials yet.</p>
+                </div>
+            </div>
+
+            <!-- ===== TEAM PAGE ===== -->
+            <div class="admin-page" id="page-team">
+                <div class="page-actions">
+                    <h3>Manage Team Members</h3>
+                    <button class="add-btn" onclick="showForm('teamForm')">
+                        <i class="fas fa-plus"></i> Add Team Member
+                    </button>
+                </div>
+
+                <div class="admin-form-container" id="teamForm" style="display:none;">
+                    <h3><i class="fas fa-user-plus"></i> Add Team Member</h3>
+                    <form id="addTeamForm">
+                        <div class="form-grid">
+                            <div class="admin-field">
+                                <label>Full Name *</label>
+                                <input type="text" id="teamName" placeholder="e.g., Adebowale Prince Aderibigbe" required>
+                            </div>
+                            <div class="admin-field">
+                                <label>Role/Position *</label>
+                                <input type="text" id="teamRole" placeholder="e.g., Founder & Lead Sound Engineer" required>
+                            </div>
+                        </div>
+                        <div class="admin-field">
+                            <label>Profile Photo</label>
+                            <div class="image-upload-area" id="teamImageUpload">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Click to upload photo</p>
+                                <input type="file" id="teamImage" accept="image/*">
+                            </div>
+                            <div class="image-preview" id="teamImagePreview"></div>
+                        </div>
+                        <div class="form-grid">
+                            <div class="admin-field">
+                                <label>LinkedIn URL</label>
+                                <input type="url" id="teamLinkedin" placeholder="https://linkedin.com/in/...">
+                            </div>
+                            <div class="admin-field">
+                                <label>Instagram URL</label>
+                                <input type="url" id="teamInstagram" placeholder="https://instagram.com/...">
+                            </div>
+                        </div>
+                        <div class="admin-field">
+                            <label>Bio</label>
+                            <textarea id="teamBio" rows="3" placeholder="Short biography..."></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="save-btn"><i class="fas fa-save"></i> Save</button>
+                            <button type="button" class="cancel-btn" onclick="hideForm('teamForm')"><i class="fas fa-times"></i> Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="team-cards-grid" id="teamCardsGrid"></div>
+                <p class="empty-message" id="teamEmpty">No team members added yet.</p>
+            </div>
+
+            <!-- ===== MESSAGES PAGE ===== -->
+            <div class="admin-page" id="page-messages">
+                <div class="page-actions">
+                    <h3>Contact Messages</h3>
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Service</th>
+                                <th>Message</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="messagesTableBody"></tbody>
+                    </table>
+                    <p class="empty-message" id="messagesEmpty">No messages yet. Messages from the contact form will appear here.</p>
+                </div>
+            </div>
+
+            <!-- ===== SETTINGS PAGE ===== -->
+            <div class="admin-page" id="page-settings">
+                <div class="page-actions">
+                    <h3>Website Settings</h3>
+                </div>
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3><i class="fas fa-building"></i> Company Information</h3>
+                        <form id="companySettingsForm">
+                            <div class="admin-field">
+                                <label>Company Name</label>
+                                <input type="text" id="companyName" value="DHEBRONIX Multimedia Company">
+                            </div>
+                            <div class="admin-field">
+                                <label>Phone Number</label>
+                                <input type="text" id="companyPhone" value="+234 801 234 5678">
+                            </div>
+                            <div class="admin-field">
+                                <label>Email</label>
+                                <input type="email" id="companyEmail" value="info@dhebronix.com">
+                            </div>
+                            <div class="admin-field">
+                                <label>Address</label>
+                                <input type="text" id="companyAddress" value="Lagos, Nigeria">
+                            </div>
+                            <div class="admin-field">
+                                <label>WhatsApp Number</label>
+                                <input type="text" id="companyWhatsapp" value="+2348012345678">
+                            </div>
+                            <button type="submit" class="save-btn"><i class="fas fa-save"></i> Save Settings</button>
+                        </form>
+                    </div>
+                    <div class="settings-card">
+                        <h3><i class="fas fa-share-alt"></i> Social Media Links</h3>
+                        <form id="socialSettingsForm">
+                            <div class="admin-field">
+                                <label><i class="fab fa-facebook"></i> Facebook</label>
+                                <input type="url" id="socialFacebook" placeholder="https://facebook.com/dhebronix">
+                            </div>
+                            <div class="admin-field">
+                                <label><i class="fab fa-instagram"></i> Instagram</label>
+                                <input type="url" id="socialInstagram" placeholder="https://instagram.com/dhebronix">
+                            </div>
+                            <div class="admin-field">
+                                <label><i class="fab fa-youtube"></i> YouTube</label>
+                                <input type="url" id="socialYoutube" placeholder="https://youtube.com/dhebronix">
+                            </div>
+                            <div class="admin-field">
+                                <label><i class="fab fa-twitter"></i> Twitter/X</label>
+                                <input type="url" id="socialTwitter" placeholder="https://twitter.com/dhebronix">
+                            </div>
+                            <button type="submit" class="save-btn"><i class="fas fa-save"></i> Save Social Links</button>
+                        </form>
+                    </div>
+                    <div class="settings-card">
+                        <h3><i class="fas fa-key"></i> Change Password</h3>
+                        <form id="passwordForm">
+                            <div class="admin-field">
+                                <label>Current Password</label>
+                                <input type="password" id="currentPassword" required>
+                            </div>
+                            <div class="admin-field">
+                                <label>New Password</label>
+                                <input type="password" id="newPassword" required>
+                            </div>
+                            <div class="admin-field">
+                                <label>Confirm New Password</label>
+                                <input type="password" id="confirmPassword" required>
+                            </div>
+                            <button type="submit" class="save-btn"><i class="fas fa-save"></i> Update Password</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- NOTIFICATION TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Saved successfully!</span>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

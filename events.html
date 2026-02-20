@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events & Setups | DHEBRONIX Multimedia Company</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="DHEBRONIX Logo">
+                <div class="logo-text">
+                    <span class="logo-main">DHEBRONIX</span>
+                    <span class="logo-sub">MULTIMEDIA COMPANY</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="events.html" class="active">Events & Setups</a></li>
+                <li><a href="equipment.html">Equipment</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <a href="contact.html" class="nav-btn">Get Quote</a>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PAGE HEADER -->
+    <section class="page-header">
+        <div class="page-header-overlay"></div>
+        <div class="container">
+            <h1>Events & <span>Setups</span></h1>
+            <nav class="breadcrumb">
+                <a href="index.html">Home</a> / <span>Events & Setups</span>
+            </nav>
+        </div>
+    </section>
+
+    <!-- EVENTS FILTER & GALLERY -->
+    <section class="events-gallery section">
+        <div class="container">
+            <div class="section-header">
+                <h4 class="section-subtitle">Our Portfolio</h4>
+                <h2 class="section-title">Event <span>Gallery</span></h2>
+                <p class="section-description">Browse through our past events and setups</p>
+            </div>
+
+            <!-- FILTER BUTTONS -->
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All Events</button>
+                <button class="filter-btn" data-filter="wedding">Weddings</button>
+                <button class="filter-btn" data-filter="corporate">Corporate</button>
+                <button class="filter-btn" data-filter="concert">Concerts</button>
+                <button class="filter-btn" data-filter="church">Church</button>
+                <button class="filter-btn" data-filter="party">Parties</button>
+            </div>
+
+            <!-- EVENTS GRID -->
+            <div class="events-portfolio-grid">
+                <!-- Event 1 -->
+                <div class="portfolio-card" data-category="concert">
+                    <div class="portfolio-image">
+                        <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600" alt="Concert Setup">
+                        <div class="portfolio-overlay">
+                            <div class="portfolio-details">
+                                <span class="portfolio-category"><i class="fas fa-music"></i> Concert</span>
+                                <h3>Afrobeats Live Concert</h3>
+                                <p><i class="fas fa-calendar"></i> January 15, 2025</p>
+                                <p><i class="fas fa-map-marker-alt"></i> Eko Convention Center, Lagos</p>
+                                <button class="portfolio-expand" onclick="openEventModal(0)">
+                                    <i class="fas fa-expand"></i> View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="portfolio-info">
+                        <h3>Afrobeats Live Concert</h3>
+                        <div class="portfolio-meta">
+                            <span><i class="fas fa-calendar"></i> Jan 2025</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Lagos</span>
+                            <span><i class="fas fa-users"></i> 2000+ Guests</span>
+                        </div>
+                        <div class="portfolio-equipment">
+                            <span class="equip-tag">12 Speakers</span>
+                            <span class="equip-tag">8 Monitors</span>
+                            <span class="equip-tag">Digital Mixer</span>
+                            <span class="equip-tag">Stage Lights</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event 2 -->
+                <div class="portfolio-card" data-category="wedding">
+                    <div class="portfolio-image">
+                        <img src="https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=600" alt="Wedding Setup">
+                        <div class="portfolio-overlay">
+                            <div class="portfolio-details">
+                                <span class="portfolio-category"><i class="fas fa-heart"></i> Wedding</span>
+                                <h3>Johnson Wedding Reception</h3>
+                                <p><i class="fas fa-calendar"></i> December 20, 2024</p>
+                                <p><i class="fas fa-map-marker-alt"></i> Landmark Event Center, Lagos</p>
+                                <button class="portfolio-expand" onclick="openEventModal(1)">
+                                    <i class="fas fa-expand"></i> View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="portfolio-info">
+                        <h3>Johnson Wedding Reception</h3>
+                        <div class="portfolio-meta">
+                            <span><i class="fas fa-calendar"></i> Dec 2024</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Lagos</span>
+                            <span><i class="fas fa-users"></i> 500 Guests</span>
+                        </div>
+                        <div class="portfolio-equipment">
+                            <span class="equip-tag">6 Speakers</span>
+                            <span class="equip-tag">Wireless Mics</span>
+                            <span class="equip-tag">LED Lights</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event 3 -->
+                <div class="portfolio-card" data-category="corporate">
+                    <div class="portfolio-image">
+                        <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=600" alt="Corporate Event">
+                        <div class="portfolio-overlay">
+                            <div class="portfolio-details">
+                                <span class="portfolio-category"><i class="fas fa-building"></i> Corporate</span>
+                                <h3>Annual Tech Conference</h3>
+                                <p><i class="fas fa-calendar"></i> November 10, 2024</p>
+                                <p><i class="fas fa-map-marker-alt"></i> Transcorp Hilton, Abuja</p>
+                                <button class="portfolio-expand" onclick="openEventModal(2)">
+                                    <i class="fas fa-expand"></i> View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="portfolio-info">
+                        <h3>Annual Tech Conference</h3>
+                        <div class="portfolio-meta">
+                            <span><i class="fas fa-calendar"></i> Nov 2024</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Abuja</span>
+                            <span><i class="fas fa-users"></i> 300 Guests</span>
+                        </div>
+                        <div class="portfolio-equipment">
+                            <span class="equip-tag">Line Array</span>
+                            <span class="equip-tag">Podium Mic</span>
+                            <span class="equip-tag">Projector</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event 4 -->
+                <div class="portfolio-card" data-category="church">
+                    <div class="portfolio-image">
+                        <img src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=600" alt="Church Event">
+                        <div class="portfolio-overlay">
+                            <div class="portfolio-details">
+                                <span class="portfolio-category"><i class="fas fa-church"></i> Church</span>
+                                <h3>Praise Night Concert</h3>
+                                <p><i class="fas fa-calendar"></i> October 5, 2024</p>
+                                <p><i class="fas fa-map-marker-alt"></i> Redemption Camp, Lagos</p>
+                                <button class="portfolio-expand" onclick="openEventModal(3)">
+                                    <i class="fas fa-expand"></i> View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="portfolio-info">
+                        <h3>Praise Night Concert</h3>
+                        <div class="portfolio-meta">
+                            <span><i class="fas fa-calendar"></i> Oct 2024</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Lagos</span>
+                            <span><i class="fas fa-users"></i> 1000+ Guests</span>
+                        </div>
+                        <div class="portfolio-equipment">
+                            <span class="equip-tag">10 Speakers</span>
+                            <span class="equip-tag">6 Monitors</span>
+                            <span class="equip-tag">Band Setup</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event 5 -->
+                <div class="portfolio-card" data-category="party">
+                    <div class="portfolio-image">
+                        <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600" alt="Party Setup">
+                        <div class="portfolio-overlay">
+                            <div class="portfolio-details">
+                                <span class="portfolio-category"><i class="fas fa-birthday-cake"></i> Party</span>
+                                <h3>50th Birthday Celebration</h3>
+                                <p><i class="fas fa-calendar"></i> September 15, 2024</p>
+                                <p><i class="fas fa-map-marker-alt"></i> Oriental Hotel, Lagos</p>
+                                <button class="portfolio-expand" onclick="openEventModal(4)">
+                                    <i class="fas fa-expand"></i> View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="portfolio-info">
+                        <h3>50th Birthday Celebration</h3>
+                        <div class="portfolio-meta">
+                            <span><i class="fas fa-calendar"></i> Sep 2024</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Lagos</span>
+                            <span><i class="fas fa-users"></i> 200 Guests</span>
+                        </div>
+                        <div class="portfolio-equipment">
+                            <span class="equip-tag">4 Speakers</span>
+                            <span class="equip-tag">DJ Setup</span>
+                            <span class="equip-tag">Uplighting</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event 6 -->
+                <div class="portfolio-card" data-category="wedding">
+                    <div class="portfolio-image">
+                        <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=600" alt="Wedding">
+                        <div class="portfolio-overlay">
+                            <div class="portfolio-details">
+                                <span class="portfolio-category"><i class="fas fa-heart"></i> Wedding</span>
+                                <h3>Okafor Royal Wedding</h3>
+                                <p><i class="fas fa-calendar"></i> August 8, 2024</p>
+                                <p><i class="fas fa-map-marker-alt"></i> Ibadan, Oyo State</p>
+                                <button class="portfolio-expand" onclick="openEventModal(5)">
+                                    <i class="fas fa-expand"></i> View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="portfolio-info">
+                        <h3>Okafor Royal Wedding</h3>
+                        <div class="portfolio-meta">
+                            <span><i class="fas fa-calendar"></i> Aug 2024</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Ibadan</span>
+                            <span><i class="fas fa-users"></i> 800 Guests</span>
+                        </div>
+                        <div class="portfolio-equipment">
+                            <span class="equip-tag">8 Speakers</span>
+                            <span class="equip-tag">Wireless Mics</span>
+                            <span class="equip-tag">Moving Lights</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOOK EVENT CTA -->
+            <div class="section-cta">
+                <p>Want us to set up your next event?</p>
+                <a href="contact.html" class="btn btn-primary"><i class="fas fa-calendar-check"></i> Book Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- EVENT MODAL -->
+    <div class="event-modal" id="eventModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeEventModal()"><i class="fas fa-times"></i></button>
+            <div class="modal-body" id="modalBody">
+                <!-- Content loaded by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <div class="footer-logo">
+                        <img src="images/logo.png" alt="DHEBRONIX Logo">
+                        <div class="logo-text">
+                            <span class="logo-main">DHEBRONIX</span>
+                            <span class="logo-sub">MULTIMEDIA COMPANY</span>
+                        </div>
+                    </div>
+                    <p>Professional sound engineering and multimedia solutions for events of all sizes.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="events.html">Events & Setups</a></li>
+                        <li><a href="equipment.html">Equipment</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-services">
+                    <h3>Our Services</h3>
+                    <ul>
+                        <li><a href="#">Live/Studio Setup</a></li>
+                        <li><a href="#">Event Setup</a></li>
+                        <li><a href="#">Equipment Sales</a></li>
+                        <li><a href="#">Sound Installation</a></li>
+                        <li><a href="#">Consultation</a></li>
+                        <li><a href="#">Training</a></li>
+                        <li><a href="#">Live streaming</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> Lagos, Nigeria</li>
+                        <li><i class="fas fa-phone"></i> +234 803 728 0457</li>
+                        <li><i class="fas fa-envelope"></i> dhebronixmultimedia@gmail.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 DHEBRONIX Multimedia Company. All Rights Reserved.</p>
+                <p>Designed by <a href="https://softcode-studio.vercel.app">Softcode Web Studio</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/2348037280457" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <button class="back-to-top" id="backToTop"><i class="fas fa-chevron-up"></i></button>
+
+    <script src="js/script.js"></script>
+    <script src="js/site-data.js"></script>
+</body>
+</html>

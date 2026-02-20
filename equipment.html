@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment | DHEBRONIX Multimedia Company</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="DHEBRONIX Logo">
+                <div class="logo-text">
+                    <span class="logo-main">DHEBRONIX</span>
+                    <span class="logo-sub">MULTIMEDIA COMPANY</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="events.html">Events & Setups</a></li>
+                <li><a href="equipment.html" class="active">Equipment</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <a href="contact.html" class="nav-btn">Get Quote</a>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PAGE HEADER -->
+    <section class="page-header">
+        <div class="page-header-overlay"></div>
+        <div class="container">
+            <h1>Sound <span>Equipment</span></h1>
+            <nav class="breadcrumb">
+                <a href="index.html">Home</a> / <span>Equipment</span>
+            </nav>
+        </div>
+    </section>
+
+    <!-- EQUIPMENT SECTION -->
+    <section class="equipment-section section">
+        <div class="container">
+            <div class="section-header">
+                <h4 class="section-subtitle">Our Store</h4>
+                <h2 class="section-title">Equipment <span>For Sale</span></h2>
+                <p class="section-description">Premium sound and lighting equipment. New and used options available.</p>
+            </div>
+
+            <!-- CATEGORY FILTER -->
+            <div class="equipment-filter">
+                <button class="equip-filter-btn active" data-filter="all">All</button>
+                <button class="equip-filter-btn" data-filter="speakers">Speakers</button>
+                <button class="equip-filter-btn" data-filter="mixers">Mixers</button>
+                <button class="equip-filter-btn" data-filter="microphones">Microphones</button>
+                <button class="equip-filter-btn" data-filter="amplifiers">Amplifiers</button>
+                <button class="equip-filter-btn" data-filter="lighting">Lighting</button>
+                <button class="equip-filter-btn" data-filter="accessories">Accessories</button>
+            </div>
+
+            <!-- PRODUCTS GRID -->
+            <div class="products-grid">
+                <!-- Product 1 -->
+                <div class="product-card" data-category="speakers">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1545454675-3531b543be5d?w=400" alt="JBL EON Speaker">
+                        <span class="product-badge new">New</span>
+                        <div class="product-actions">
+                            <button class="product-quick-view" onclick="openProductModal(0)"><i class="fas fa-eye"></i></button>
+                            <a href="https://wa.me/2348037280457?text=I'm interested in JBL EON 615 Speaker" class="product-inquiry"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Speakers</span>
+                        <h3>JBL EON 615</h3>
+                        <p class="product-specs">1000W, 15" Two-Way Active Speaker</p>
+                        <div class="product-price">
+                            <span class="price">₦450,000</span>
+                        </div>
+                        <a href="https://wa.me/2348037280457?text=I'm interested in JBL EON 615 Speaker" class="btn btn-product"><i class="fab fa-whatsapp"></i> Inquire Now</a>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="product-card" data-category="mixers">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1598653222000-6b7b7a552625?w=400" alt="Yamaha Mixer">
+                        <span class="product-badge new">New</span>
+                        <div class="product-actions">
+                            <button class="product-quick-view" onclick="openProductModal(1)"><i class="fas fa-eye"></i></button>
+                            <a href="https://wa.me/2348037280457?text=I'm interested in Yamaha MG20XU Mixer" class="product-inquiry"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Mixers</span>
+                        <h3>Yamaha MG20XU</h3>
+                        <p class="product-specs">20-Channel Mixing Console with USB & Effects</p>
+                        <div class="product-price">
+                            <span class="price">₦380,000</span>
+                        </div>
+                        <a href="https://wa.me/2348037280457?text=I'm interested in Yamaha MG20XU Mixer" class="btn btn-product"><i class="fab fa-whatsapp"></i> Inquire Now</a>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="product-card" data-category="microphones">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=400" alt="Shure Microphone">
+                        <span class="product-badge new">New</span>
+                        <div class="product-actions">
+                            <button class="product-quick-view" onclick="openProductModal(2)"><i class="fas fa-eye"></i></button>
+                            <a href="https://wa.me/2348037280457?text=I'm interested in Shure SM58 Microphone" class="product-inquiry"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Microphones</span>
+                        <h3>Shure SM58</h3>
+                        <p class="product-specs">Dynamic Vocal Microphone - Industry Standard</p>
+                        <div class="product-price">
+                            <span class="price">₦65,000</span>
+                        </div>
+                        <a href="https://wa.me/2348037280457?text=I'm interested in Shure SM58 Microphone" class="btn btn-product"><i class="fab fa-whatsapp"></i> Inquire Now</a>
+                    </div>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="product-card" data-category="amplifiers">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400" alt="Crown Amplifier">
+                        <span class="product-badge used">Used</span>
+                        <div class="product-actions">
+                            <button class="product-quick-view" onclick="openProductModal(3)"><i class="fas fa-eye"></i></button>
+                            <a href="https://wa.me/2348037280457?text=I'm interested in Crown XLS 2502 Amplifier" class="product-inquiry"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Amplifiers</span>
+                        <h3>Crown XLS 2502</h3>
+                        <p class="product-specs">2-Channel 775W Power Amplifier</p>
+                        <div class="product-price">
+                            <span class="price-old">₦350,000</span>
+                            <span class="price">₦250,000</span>
+                        </div>
+                        <a href="https://wa.me/2348037280457?text=I'm interested in Crown XLS 2502 Amplifier" class="btn btn-product"><i class="fab fa-whatsapp"></i> Inquire Now</a>
+                    </div>
+                </div>
+
+                <!-- Product 5 -->
+                <div class="product-card" data-category="lighting">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1504509546545-e000b4a62425?w=400" alt="LED Stage Lights">
+                        <span class="product-badge new">New</span>
+                        <div class="product-actions">
+                            <button class="product-quick-view" onclick="openProductModal(4)"><i class="fas fa-eye"></i></button>
+                            <a href="https://wa.me/2348037280457?text=I'm interested in LED Par Stage Lights" class="product-inquiry"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Lighting</span>
+                        <h3>LED Par Stage Lights (Set of 4)</h3>
+                        <p class="product-specs">36 LED RGBW Par Can, DMX512 Control</p>
+                        <div class="product-price">
+                            <span class="price">₦120,000</span>
+                        </div>
+                        <a href="https://wa.me/2348037280457?text=I'm interested in LED Par Stage Lights" class="btn btn-product"><i class="fab fa-whatsapp"></i> Inquire Now</a>
+                    </div>
+                </div>
+
+                <!-- Product 6 -->
+                <div class="product-card" data-category="accessories">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400" alt="XLR Cables">
+                        <span class="product-badge new">New</span>
+                        <div class="product-actions">
+                            <button class="product-quick-view" onclick="openProductModal(5)"><i class="fas fa-eye"></i></button>
+                            <a href="https://wa.me/2348037280457?text=I'm interested in XLR Cable Bundle" class="product-inquiry"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Accessories</span>
+                        <h3>XLR Cable Bundle (10-Pack)</h3>
+                        <p class="product-specs">25ft Professional XLR Cables, Gold Plated</p>
+                        <div class="product-price">
+                            <span class="price">₦85,000</span>
+                        </div>
+                        <a href="https://wa.me/2348037280457?text=I'm interested in XLR Cable Bundle" class="btn btn-product"><i class="fab fa-whatsapp"></i> Inquire Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CUSTOM INQUIRY -->
+            <div class="custom-inquiry">
+                <div class="inquiry-content">
+                    <h3><i class="fas fa-search"></i> Can't Find What You're Looking For?</h3>
+                    <p>We can source any professional sound or lighting equipment for you. Contact us with your requirements.</p>
+                    <a href="contact.html" class="btn btn-primary"><i class="fas fa-envelope"></i> Custom Inquiry</a>
+                    <a href="https://wa.me/2348037280457?text=I need help finding specific equipment" class="btn btn-outline"><i class="fab fa-whatsapp"></i> WhatsApp Us</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <div class="footer-logo">
+                        <img src="images/logo.png" alt="DHEBRONIX Logo">
+                        <div class="logo-text">
+                            <span class="logo-main">DHEBRONIX</span>
+                            <span class="logo-sub">MULTIMEDIA COMPANY</span>
+                        </div>
+                    </div>
+                    <p>Professional sound engineering and multimedia solutions for events of all sizes.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="events.html">Events & Setups</a></li>
+                        <li><a href="equipment.html">Equipment</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-services">
+                    <h3>Our Services</h3>
+                    <ul>
+                        <li><a href="#">Live/Studio Setup</a></li>
+                        <li><a href="#">Event Setup</a></li>
+                        <li><a href="#">Equipment Sales</a></li>
+                        <li><a href="#">Sound Installation</a></li>
+                        <li><a href="#">Consultation</a></li>
+                        <li><a href="#">Training</a></li>
+                        <li><a href="#">Live streaming</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> Lagos, Nigeria</li>
+                        <li><i class="fas fa-phone"></i> +234 803 728 0457</li>
+                        <li><i class="fas fa-envelope"></i>dhebronixmultimedia@gmail.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 DHEBRONIX Multimedia Company. All Rights Reserved.</p>
+                <p>Designed by <a href="https://softcode-studio.vercel.app">Softcode Web Studio</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/2348037280457" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <button class="back-to-top" id="backToTop"><i class="fas fa-chevron-up"></i></button>
+
+    <script src="js/script.js"></script>
+    <script src="js/site-data.js"></script>
+</body>
+</html>
