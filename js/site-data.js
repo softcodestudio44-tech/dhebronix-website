@@ -341,6 +341,10 @@ async function loadSiteSettings() {
             if (icon.classList.contains('fa-instagram') && social.instagram) link.href = social.instagram;
             if (icon.classList.contains('fa-youtube') && social.youtube) link.href = social.youtube;
             if (icon.classList.contains('fa-twitter') && social.twitter) link.href = social.twitter;
+            if (social.facebook)  document.getElementById('fbLink').href = social.facebook;
+if (social.instagram) document.getElementById('igLink').href = social.instagram;
+if (social.youtube)   document.getElementById('ytLink').href = social.youtube;
+if (social.twitter)   document.getElementById('twLink').href = social.twitter;
         });
     }
 }
