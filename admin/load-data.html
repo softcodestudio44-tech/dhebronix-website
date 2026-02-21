@@ -364,10 +364,10 @@
 
         const defaultSettings = {
             name: 'DHEBRONIX Multimedia Company',
-            phone: '+234 801 234 5678',
-            email: 'info@dhebronix.com',
+            phone: '+2348037280457',
+            email: 'dhebronixmultimedia@gmail.com',
             address: 'Lagos, Nigeria',
-            whatsapp: '+2348012345678'
+            whatsapp: '+2348037280457'
         };
 
         const defaultSocial = {
@@ -506,3 +506,9 @@
     </script>
 </body>
 </html>
+if (social) {
+    if (social.facebook)   document.getElementById('fbLink').href = social.facebook;
+    if (social.instagram)  document.getElementById('igLink').href = social.instagram;
+    if (social.youtube)    document.getElementById('ytLink').href = social.youtube;
+    if (social.twitter)    document.getElementById('twLink').href = social.twitter;
+}
