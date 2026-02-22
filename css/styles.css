@@ -3116,3 +3116,22 @@ img {
         right: 18px;
     }
 }
+/* ===== LOADING STATE - PREVENTS FLASH ===== */
+.loading-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.loading-placeholder i {
+    margin-right: 10px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
