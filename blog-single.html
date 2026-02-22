@@ -461,5 +461,64 @@
 
     <script src="js/script.js"></script>
     <script type="module" src="js/site-data.js"></script>
+    <script type="module">
+    import { dbGetAll } from './js/firebase-config.js';
+
+    // Get the blog ID from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const blogId = urlParams.get('id');
+
+    if (blogId) {
+        const blogs = await dbGetAll('blogs');
+        const post = blogs.find(b => b.id === blogId);
+
+        if (post) {
+            // Update the page title
+            document.title = `${post.title} | DHEBRONIX Blog`;
+
+            // Update post header
+            const postTitle = document.querySelector('.post-title');
+            if (postTitle) postTitle.textContent = post.title;
+
+            // Update category
+            const postCategory = document.querySelector('.post-category');
+            if (postCategory) postCategory.textContent = post.category || 'General';
+
+            // Update date
+            const postDate = document.querySelector('.post-date span');
+            if (postDate && post.date) {
+                postDate.textContent = new Date(post.date).toLocaleDateString('en-US', {
+                    month: 'long', day: 'numeric', year: 'numeric'
+                });
+            }
+
+            // Update author
+            const postAuthor = document.querySelector('.post-author span');
+            if (postAuthor) postAuthor.textContent = post.author || 'DHEBRONIX Team';
+
+            // Update featured image
+            const postImage = document.querySelector('.post-featured-image img');
+            if (postImage && post.image) postImage.src = post.image;
+
+            // Update content
+            const postBody = document.querySelector('.post-body');
+            if (postBody && post.content) {
+                // Convert simple text to HTML paragraphs
+                const paragraphs = post.content.split('\n').filter(p => p.trim());
+                postBody.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+            }
+
+            // Update tags
+            const tagsContainer = document.querySelector('.post-tags');
+            if (tagsContainer && post.tags) {
+                const tags = post.tags.split(',').map(t => t.trim());
+                tagsContainer.innerHTML = `
+                    <span class="tags-label"><i class="fas fa-tags"></i> Tags:</span>
+                    ${tags.map(tag => `<a href="blog.html">${tag}</a>`).join('')}
+                `;
+            }
+        }
+    }
+</script>
 </body>
 </html>

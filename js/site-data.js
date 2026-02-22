@@ -215,9 +215,9 @@ async function loadBlogPageData() {
                     <span><i class="fas fa-calendar"></i> ${featuredDate}</span>
                     <span><i class="fas fa-user"></i> ${featured.author || 'DHEBRONIX Team'}</span>
                 </div>
-                <h2><a href="#">${featured.title}</a></h2>
+                <h2><a href="blog-single.html?id=${featured.id}">${featured.title}</a></h2>
                 <p>${featured.excerpt || (featured.content || '').substring(0, 200)}...</p>
-                <a href="#" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                <a href="blog-single.html?id=${featured.id}" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
             </div>
         </article>
     `;
@@ -234,9 +234,9 @@ async function loadBlogPageData() {
                     </div>
                     <div class="blog-content">
                         <div class="blog-meta"><span><i class="fas fa-calendar"></i> ${postDate}</span></div>
-                        <h3><a href="#">${post.title}</a></h3>
+                        <h3><a href="blog-single.html?id=${post.id}">${post.title}</a></h3>
                         <p>${post.excerpt || (post.content || '').substring(0, 120)}...</p>
-                        <a href="#" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                        <a href="blog-single.html?id=${post.id}" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </article>
             `;
