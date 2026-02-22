@@ -1,4 +1,4 @@
-// ===== DHEBRONIX ADMIN DASHBOARD - FIREBASE VERSION (FIXED) =====
+// ===== DHEBRONIX ADMIN DASHBOARD - FIREBASE VERSION (FULLY FIXED) =====
 
 import { dbGetAll, dbGetOne, dbAdd, dbUpdate, dbDelete, dbSaveSettings, dbGetSettings } from '../js/firebase-config.js';
 
@@ -8,6 +8,12 @@ let editingEquipmentId = null;
 let editingBlogId = null;
 let editingTestimonialId = null;
 let editingTeamId = null;
+
+// Store original images when editing
+let originalEventImages = [];
+let originalEquipmentImages = [];
+let originalBlogImage = '';
+let originalTeamImage = '';
 
 // ===== NAVIGATION =====
 const sidebarLinks = document.querySelectorAll('.sidebar-link[data-page]');
@@ -73,17 +79,24 @@ window.showForm = showForm;
 
 function hideForm(formId) {
     document.getElementById(formId).style.display = 'none';
-    // Reset ALL editing states
+    resetEditingState();
+}
+window.hideForm = hideForm;
+
+function resetEditingState() {
     editingEventId = null;
     editingEquipmentId = null;
     editingBlogId = null;
     editingTestimonialId = null;
     editingTeamId = null;
-    // Reset form title if it exists
+    originalEventImages = [];
+    originalEquipmentImages = [];
+    originalBlogImage = '';
+    originalTeamImage = '';
+
     const eventTitle = document.getElementById('eventFormTitle');
     if (eventTitle) eventTitle.innerHTML = '<i class="fas fa-calendar-plus"></i> Add New Event';
 }
-window.hideForm = hideForm;
 
 // ===== TOAST =====
 function showToast(message, type = 'success') {
@@ -95,7 +108,7 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// ===== IMAGE TO BASE64 =====
+// ===== IMAGE HELPERS =====
 function getImageData(inputId) {
     return new Promise((resolve) => {
         const input = document.getElementById(inputId);
@@ -127,14 +140,22 @@ function getAllImagesData(inputId) {
     });
 }
 
-// ===== IMAGE PREVIEW =====
+// Get all images currently showing in preview (both old and new)
+function getPreviewImages(previewId) {
+    const images = [];
+    document.querySelectorAll(`#${previewId} .preview-item img`).forEach(img => {
+        if (img.src) images.push(img.src);
+    });
+    return images;
+}
+
+// ===== IMAGE PREVIEW SETUP =====
 function setupImagePreview(inputId, previewId) {
     const input = document.getElementById(inputId);
     if (!input) return;
 
     input.addEventListener('change', function () {
         const preview = document.getElementById(previewId);
-        // Don't clear existing previews when editing - only clear for new uploads
         Array.from(this.files).forEach((file) => {
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -161,18 +182,17 @@ setupImagePreview('teamImage', 'teamImagePreview');
 // ============================================
 document.getElementById('addEventForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    showToast(editingEventId ? 'Updating event...' : 'Saving event...');
 
-    const newImages = await getAllImagesData('eventImages');
+    const isEditing = editingEventId !== null;
+    showToast(isEditing ? 'Updating event...' : 'Saving event...');
 
-    // Get existing preview images (from edit mode)
-    const existingImages = [];
-    document.querySelectorAll('#eventImagePreview .preview-item img').forEach(img => {
-        // Only keep images that were already saved (not new uploads)
-        if (img.src && !img.src.startsWith('data:image')) {
-            existingImages.push(img.src);
-        }
-    });
+    // Get images from preview area (includes both old and newly added)
+    let finalImages = getPreviewImages('eventImagePreview');
+
+    // If no images in preview and we're editing, keep original images
+    if (finalImages.length === 0 && isEditing) {
+        finalImages = originalEventImages;
+    }
 
     const event = {
         title: document.getElementById('eventTitle').value,
@@ -183,11 +203,11 @@ document.getElementById('addEventForm').addEventListener('submit', async functio
         equipment: document.getElementById('eventEquipment').value,
         description: document.getElementById('eventDescription').value,
         testimonial: document.getElementById('eventTestimonial').value,
-        images: [...existingImages, ...newImages]
+        images: finalImages
     };
 
     let success;
-    if (editingEventId) {
+    if (isEditing) {
         success = await dbUpdate('events', editingEventId, event);
         if (success) showToast('Event updated successfully!');
     } else {
@@ -199,7 +219,6 @@ document.getElementById('addEventForm').addEventListener('submit', async functio
         this.reset();
         document.getElementById('eventImagePreview').innerHTML = '';
         hideForm('eventForm');
-        editingEventId = null;
         loadEvents();
         updateDashboardStats();
     } else {
@@ -213,6 +232,7 @@ async function editEvent(id) {
     if (!event) return;
 
     editingEventId = id;
+    originalEventImages = event.images || [];
     document.getElementById('eventFormTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Event';
 
     showForm('eventForm');
@@ -224,6 +244,9 @@ async function editEvent(id) {
     document.getElementById('eventEquipment').value = event.equipment || '';
     document.getElementById('eventDescription').value = event.description || '';
     document.getElementById('eventTestimonial').value = event.testimonial || '';
+
+    // Clear file input
+    document.getElementById('eventImages').value = '';
 
     const preview = document.getElementById('eventImagePreview');
     preview.innerHTML = '';
@@ -252,16 +275,14 @@ window.deleteEvent = deleteEvent;
 // ============================================
 document.getElementById('addEquipmentForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    showToast(editingEquipmentId ? 'Updating equipment...' : 'Saving equipment...');
 
-    const newImages = await getAllImagesData('productImages');
+    const isEditing = editingEquipmentId !== null;
+    showToast(isEditing ? 'Updating equipment...' : 'Saving equipment...');
 
-    const existingImages = [];
-    document.querySelectorAll('#productImagePreview .preview-item img').forEach(img => {
-        if (img.src && !img.src.startsWith('data:image')) {
-            existingImages.push(img.src);
-        }
-    });
+    let finalImages = getPreviewImages('productImagePreview');
+    if (finalImages.length === 0 && isEditing) {
+        finalImages = originalEquipmentImages;
+    }
 
     const product = {
         name: document.getElementById('productName').value,
@@ -273,11 +294,11 @@ document.getElementById('addEquipmentForm').addEventListener('submit', async fun
         specs: document.getElementById('productSpecs').value,
         description: document.getElementById('productDescription').value,
         available: document.getElementById('productAvailable').checked,
-        images: [...existingImages, ...newImages]
+        images: finalImages
     };
 
     let success;
-    if (editingEquipmentId) {
+    if (isEditing) {
         success = await dbUpdate('equipment', editingEquipmentId, product);
         if (success) showToast('Equipment updated successfully!');
     } else {
@@ -289,7 +310,6 @@ document.getElementById('addEquipmentForm').addEventListener('submit', async fun
         this.reset();
         document.getElementById('productImagePreview').innerHTML = '';
         hideForm('equipmentForm');
-        editingEquipmentId = null;
         loadEquipment();
         updateDashboardStats();
     } else {
@@ -303,6 +323,7 @@ async function editEquipment(id) {
     if (!item) return;
 
     editingEquipmentId = id;
+    originalEquipmentImages = item.images || [];
     showForm('equipmentForm');
 
     document.getElementById('productName').value = item.name || '';
@@ -314,6 +335,8 @@ async function editEquipment(id) {
     document.getElementById('productSpecs').value = item.specs || '';
     document.getElementById('productDescription').value = item.description || '';
     document.getElementById('productAvailable').checked = item.available !== false;
+
+    document.getElementById('productImages').value = '';
 
     const preview = document.getElementById('productImagePreview');
     preview.innerHTML = '';
@@ -342,11 +365,26 @@ window.deleteEquipment = deleteEquipment;
 // ============================================
 document.getElementById('addBlogForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    showToast(editingBlogId ? 'Updating post...' : 'Publishing post...');
 
+    const isEditing = editingBlogId !== null;
+    showToast(isEditing ? 'Updating post...' : 'Publishing post...');
+
+    // Check for new image upload
     const newImage = await getImageData('blogImage');
-    const existingImg = document.querySelector('#blogImagePreview .preview-item img');
-    const finalImage = newImage || (existingImg ? existingImg.src : '');
+
+    // Check preview for existing image
+    const previewImg = document.querySelector('#blogImagePreview .preview-item img');
+    const previewImage = previewImg ? previewImg.src : '';
+
+    // Priority: new upload > preview image > original image
+    let finalImage = '';
+    if (newImage) {
+        finalImage = newImage;
+    } else if (previewImage) {
+        finalImage = previewImage;
+    } else if (isEditing) {
+        finalImage = originalBlogImage;
+    }
 
     const post = {
         title: document.getElementById('blogTitle').value,
@@ -361,7 +399,7 @@ document.getElementById('addBlogForm').addEventListener('submit', async function
     };
 
     let success;
-    if (editingBlogId) {
+    if (isEditing) {
         success = await dbUpdate('blogs', editingBlogId, post);
         if (success) showToast('Blog post updated!');
     } else {
@@ -373,7 +411,6 @@ document.getElementById('addBlogForm').addEventListener('submit', async function
         this.reset();
         document.getElementById('blogImagePreview').innerHTML = '';
         hideForm('blogForm');
-        editingBlogId = null;
         loadBlogs();
         updateDashboardStats();
     } else {
@@ -387,6 +424,7 @@ async function editBlog(id) {
     if (!post) return;
 
     editingBlogId = id;
+    originalBlogImage = post.image || '';
     showForm('blogForm');
 
     document.getElementById('blogTitle').value = post.title || '';
@@ -396,6 +434,8 @@ async function editBlog(id) {
     document.getElementById('blogContent').value = post.content || '';
     document.getElementById('blogExcerpt').value = post.excerpt || '';
     document.getElementById('blogTags').value = post.tags || '';
+
+    document.getElementById('blogImage').value = '';
 
     const preview = document.getElementById('blogImagePreview');
     preview.innerHTML = '';
@@ -423,6 +463,8 @@ window.deleteBlog = deleteBlog;
 document.getElementById('addTestimonialForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
+    const isEditing = editingTestimonialId !== null;
+
     const testimonial = {
         name: document.getElementById('testimonialName').value,
         event: document.getElementById('testimonialEvent').value,
@@ -431,7 +473,7 @@ document.getElementById('addTestimonialForm').addEventListener('submit', async f
     };
 
     let success;
-    if (editingTestimonialId) {
+    if (isEditing) {
         success = await dbUpdate('testimonials', editingTestimonialId, testimonial);
         if (success) showToast('Testimonial updated!');
     } else {
@@ -442,7 +484,6 @@ document.getElementById('addTestimonialForm').addEventListener('submit', async f
     if (success) {
         this.reset();
         hideForm('testimonialForm');
-        editingTestimonialId = null;
         loadTestimonials();
     }
 });
@@ -476,28 +517,33 @@ window.deleteTestimonial = deleteTestimonial;
 document.getElementById('addTeamForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const image = await getImageData('teamImage');
+    const isEditing = editingTeamId !== null;
+    const newImage = await getImageData('teamImage');
+
+    // Check preview for existing image
+    const previewImg = document.querySelector('#teamImagePreview .preview-item img');
+    const previewImage = previewImg ? previewImg.src : '';
+
+    let finalImage = '';
+    if (newImage) {
+        finalImage = newImage;
+    } else if (previewImage) {
+        finalImage = previewImage;
+    } else if (isEditing) {
+        finalImage = originalTeamImage;
+    }
 
     const member = {
         name: document.getElementById('teamName').value,
         role: document.getElementById('teamRole').value,
         linkedin: document.getElementById('teamLinkedin').value,
         instagram: document.getElementById('teamInstagram').value,
-        bio: document.getElementById('teamBio').value
+        bio: document.getElementById('teamBio').value,
+        image: finalImage
     };
 
-    // Only update image if a new one was uploaded
-    if (image) member.image = image;
-
-    // If editing and no new image, keep the old one
-    if (editingTeamId && !image) {
-        const team = await dbGetAll('team');
-        const existing = team.find(t => t.id === editingTeamId);
-        if (existing && existing.image) member.image = existing.image;
-    }
-
     let success;
-    if (editingTeamId) {
+    if (isEditing) {
         success = await dbUpdate('team', editingTeamId, member);
         if (success) showToast('Team member updated!');
     } else {
@@ -509,7 +555,6 @@ document.getElementById('addTeamForm').addEventListener('submit', async function
         this.reset();
         document.getElementById('teamImagePreview').innerHTML = '';
         hideForm('teamForm');
-        editingTeamId = null;
         loadTeam();
     }
 });
@@ -520,6 +565,7 @@ async function editTeamMember(id) {
     if (!member) return;
 
     editingTeamId = id;
+    originalTeamImage = member.image || '';
     showForm('teamForm');
 
     document.getElementById('teamName').value = member.name || '';
@@ -527,6 +573,8 @@ async function editTeamMember(id) {
     document.getElementById('teamLinkedin').value = member.linkedin || '';
     document.getElementById('teamInstagram').value = member.instagram || '';
     document.getElementById('teamBio').value = member.bio || '';
+
+    document.getElementById('teamImage').value = '';
 
     const preview = document.getElementById('teamImagePreview');
     preview.innerHTML = '';
@@ -753,27 +801,19 @@ if (socialForm) {
     });
 }
 
-// Password change
 const passwordForm = document.getElementById('passwordForm');
 if (passwordForm) {
     passwordForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        const current = document.getElementById('currentPassword').value;
         const newPass = document.getElementById('newPassword').value;
-        const confirm = document.getElementById('confirmPassword').value;
+        const confirmPass = document.getElementById('confirmPassword').value;
 
-        if (newPass !== confirm) {
+        if (newPass !== confirmPass) {
             showToast('Passwords do not match!', 'error');
             return;
         }
 
-        // Simple password check (you can improve this)
-        if (current !== 'admin2025') {
-            showToast('Current password is incorrect!', 'error');
-            return;
-        }
-
-        showToast('Password updated! (Note: Update admin-login.html too)');
+        showToast('Password updated! (Update admin-login.html too)');
         this.reset();
     });
 }
@@ -795,7 +835,7 @@ async function updateDashboardStats() {
 }
 
 // ============================================
-// ===== TEXT FORMATTING (Blog Editor) =====
+// ===== TEXT FORMATTING =====
 // ============================================
 function formatText(type) {
     const textarea = document.getElementById('blogContent');
@@ -845,7 +885,7 @@ if (adminNameEl) {
     adminNameEl.textContent = localStorage.getItem('dhebronix_admin_user') || 'Admin';
 }
 
-// ===== INITIALIZE - Load everything on page load =====
+// ===== INITIALIZE =====
 updateDashboardStats();
 loadEvents();
 loadEquipment();
