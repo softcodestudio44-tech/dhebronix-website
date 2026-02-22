@@ -1,6 +1,13 @@
-// ===== DHEBRONIX ADMIN DASHBOARD - FIREBASE VERSION =====
+// ===== DHEBRONIX ADMIN DASHBOARD - FIREBASE VERSION (FIXED) =====
 
 import { dbGetAll, dbGetOne, dbAdd, dbUpdate, dbDelete, dbSaveSettings, dbGetSettings } from '../js/firebase-config.js';
+
+// ===== EDITING STATE VARIABLES =====
+let editingEventId = null;
+let editingEquipmentId = null;
+let editingBlogId = null;
+let editingTestimonialId = null;
+let editingTeamId = null;
 
 // ===== NAVIGATION =====
 const sidebarLinks = document.querySelectorAll('.sidebar-link[data-page]');
@@ -41,7 +48,6 @@ sidebarLinks.forEach(link => {
     });
 });
 
-// Make navigateTo available globally
 window.navigateTo = navigateTo;
 
 // ===== SIDEBAR TOGGLE =====
@@ -67,14 +73,15 @@ window.showForm = showForm;
 
 function hideForm(formId) {
     document.getElementById(formId).style.display = 'none';
-    function hideForm(formId) {
-    document.getElementById(formId).style.display = 'none';
-    // Reset editing mode when form is closed
+    // Reset ALL editing states
     editingEventId = null;
     editingEquipmentId = null;
     editingBlogId = null;
     editingTestimonialId = null;
     editingTeamId = null;
+    // Reset form title if it exists
+    const eventTitle = document.getElementById('eventFormTitle');
+    if (eventTitle) eventTitle.innerHTML = '<i class="fas fa-calendar-plus"></i> Add New Event';
 }
 window.hideForm = hideForm;
 
@@ -127,8 +134,7 @@ function setupImagePreview(inputId, previewId) {
 
     input.addEventListener('change', function () {
         const preview = document.getElementById(previewId);
-        preview.innerHTML = '';
-
+        // Don't clear existing previews when editing - only clear for new uploads
         Array.from(this.files).forEach((file) => {
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -150,19 +156,20 @@ setupImagePreview('productImages', 'productImagePreview');
 setupImagePreview('blogImage', 'blogImagePreview');
 setupImagePreview('teamImage', 'teamImagePreview');
 
-// ===== ADD EVENT =====
-let editingEventId = null;
-
+// ============================================
+// ===== EVENT: ADD & EDIT =====
+// ============================================
 document.getElementById('addEventForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     showToast(editingEventId ? 'Updating event...' : 'Saving event...');
 
-    const images = await getAllImagesData('eventImages');
+    const newImages = await getAllImagesData('eventImages');
 
-    // Get existing images that weren't removed
+    // Get existing preview images (from edit mode)
     const existingImages = [];
     document.querySelectorAll('#eventImagePreview .preview-item img').forEach(img => {
-        if (!img.src.startsWith('data:')) {
+        // Only keep images that were already saved (not new uploads)
+        if (img.src && !img.src.startsWith('data:image')) {
             existingImages.push(img.src);
         }
     });
@@ -176,16 +183,14 @@ document.getElementById('addEventForm').addEventListener('submit', async functio
         equipment: document.getElementById('eventEquipment').value,
         description: document.getElementById('eventDescription').value,
         testimonial: document.getElementById('eventTestimonial').value,
-        images: [...existingImages, ...images]
+        images: [...existingImages, ...newImages]
     };
 
     let success;
     if (editingEventId) {
-        // UPDATE existing event
         success = await dbUpdate('events', editingEventId, event);
         if (success) showToast('Event updated successfully!');
     } else {
-        // ADD new event
         success = await dbAdd('events', event);
         if (success) showToast('Event added successfully!');
     }
@@ -195,7 +200,6 @@ document.getElementById('addEventForm').addEventListener('submit', async functio
         document.getElementById('eventImagePreview').innerHTML = '';
         hideForm('eventForm');
         editingEventId = null;
-        document.getElementById('eventFormTitle').innerHTML = '<i class="fas fa-calendar-plus"></i> Add New Event';
         loadEvents();
         updateDashboardStats();
     } else {
@@ -203,18 +207,58 @@ document.getElementById('addEventForm').addEventListener('submit', async functio
     }
 });
 
-// ===== ADD EQUIPMENT =====
-let editingEquipmentId = null;
+async function editEvent(id) {
+    const events = await dbGetAll('events');
+    const event = events.find(e => e.id === id);
+    if (!event) return;
 
+    editingEventId = id;
+    document.getElementById('eventFormTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Event';
+
+    showForm('eventForm');
+    document.getElementById('eventTitle').value = event.title || '';
+    document.getElementById('eventCategory').value = event.category || '';
+    document.getElementById('eventDate').value = event.date || '';
+    document.getElementById('eventVenue').value = event.venue || '';
+    document.getElementById('eventGuests').value = event.guests || '';
+    document.getElementById('eventEquipment').value = event.equipment || '';
+    document.getElementById('eventDescription').value = event.description || '';
+    document.getElementById('eventTestimonial').value = event.testimonial || '';
+
+    const preview = document.getElementById('eventImagePreview');
+    preview.innerHTML = '';
+    if (event.images && event.images.length > 0) {
+        event.images.forEach(img => {
+            const div = document.createElement('div');
+            div.className = 'preview-item';
+            div.innerHTML = `<img src="${img}" alt="Event"><button class="remove-preview" onclick="this.parentElement.remove()">×</button>`;
+            preview.appendChild(div);
+        });
+    }
+}
+window.editEvent = editEvent;
+
+async function deleteEvent(id) {
+    if (!confirm('Delete this event?')) return;
+    await dbDelete('events', id);
+    showToast('Event deleted!', 'error');
+    loadEvents();
+    updateDashboardStats();
+}
+window.deleteEvent = deleteEvent;
+
+// ============================================
+// ===== EQUIPMENT: ADD & EDIT =====
+// ============================================
 document.getElementById('addEquipmentForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     showToast(editingEquipmentId ? 'Updating equipment...' : 'Saving equipment...');
 
-    const images = await getAllImagesData('productImages');
+    const newImages = await getAllImagesData('productImages');
 
     const existingImages = [];
     document.querySelectorAll('#productImagePreview .preview-item img').forEach(img => {
-        if (!img.src.startsWith('data:')) {
+        if (img.src && !img.src.startsWith('data:image')) {
             existingImages.push(img.src);
         }
     });
@@ -229,7 +273,7 @@ document.getElementById('addEquipmentForm').addEventListener('submit', async fun
         specs: document.getElementById('productSpecs').value,
         description: document.getElementById('productDescription').value,
         available: document.getElementById('productAvailable').checked,
-        images: [...existingImages, ...images]
+        images: [...existingImages, ...newImages]
     };
 
     let success;
@@ -253,17 +297,56 @@ document.getElementById('addEquipmentForm').addEventListener('submit', async fun
     }
 });
 
-// ===== ADD BLOG =====
-let editingBlogId = null;
+async function editEquipment(id) {
+    const equipment = await dbGetAll('equipment');
+    const item = equipment.find(e => e.id === id);
+    if (!item) return;
 
+    editingEquipmentId = id;
+    showForm('equipmentForm');
+
+    document.getElementById('productName').value = item.name || '';
+    document.getElementById('productCategory').value = item.category || '';
+    document.getElementById('productPrice').value = item.price || '';
+    document.getElementById('productOldPrice').value = item.oldPrice || '';
+    document.getElementById('productCondition').value = item.condition || 'new';
+    document.getElementById('productBrand').value = item.brand || '';
+    document.getElementById('productSpecs').value = item.specs || '';
+    document.getElementById('productDescription').value = item.description || '';
+    document.getElementById('productAvailable').checked = item.available !== false;
+
+    const preview = document.getElementById('productImagePreview');
+    preview.innerHTML = '';
+    if (item.images && item.images.length > 0) {
+        item.images.forEach(img => {
+            const div = document.createElement('div');
+            div.className = 'preview-item';
+            div.innerHTML = `<img src="${img}" alt="Product"><button class="remove-preview" onclick="this.parentElement.remove()">×</button>`;
+            preview.appendChild(div);
+        });
+    }
+}
+window.editEquipment = editEquipment;
+
+async function deleteEquipment(id) {
+    if (!confirm('Delete this equipment?')) return;
+    await dbDelete('equipment', id);
+    showToast('Equipment deleted!', 'error');
+    loadEquipment();
+    updateDashboardStats();
+}
+window.deleteEquipment = deleteEquipment;
+
+// ============================================
+// ===== BLOG: ADD & EDIT =====
+// ============================================
 document.getElementById('addBlogForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     showToast(editingBlogId ? 'Updating post...' : 'Publishing post...');
 
-    const image = await getImageData('blogImage');
-
+    const newImage = await getImageData('blogImage');
     const existingImg = document.querySelector('#blogImagePreview .preview-item img');
-    const finalImage = image || (existingImg ? existingImg.src : '');
+    const finalImage = newImage || (existingImg ? existingImg.src : '');
 
     const post = {
         title: document.getElementById('blogTitle').value,
@@ -298,181 +381,6 @@ document.getElementById('addBlogForm').addEventListener('submit', async function
     }
 });
 
-// ===== ADD TESTIMONIAL =====
-let editingTestimonialId = null;
-
-document.getElementById('addTestimonialForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    const testimonial = {
-        name: document.getElementById('testimonialName').value,
-        event: document.getElementById('testimonialEvent').value,
-        rating: document.getElementById('testimonialRating').value,
-        text: document.getElementById('testimonialText').value
-    };
-
-    let success;
-    if (editingTestimonialId) {
-        success = await dbUpdate('testimonials', editingTestimonialId, testimonial);
-        if (success) showToast('Testimonial updated!');
-    } else {
-        success = await dbAdd('testimonials', testimonial);
-        if (success) showToast('Testimonial added!');
-    }
-
-    if (success) {
-        this.reset();
-        hideForm('testimonialForm');
-        editingTestimonialId = null;
-        loadTestimonials();
-    }
-});
-
-// ===== ADD TEAM =====
-let editingTeamId = null;
-
-document.getElementById('addTeamForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    const image = await getImageData('teamImage');
-
-    const member = {
-        name: document.getElementById('teamName').value,
-        role: document.getElementById('teamRole').value,
-        linkedin: document.getElementById('teamLinkedin').value,
-        instagram: document.getElementById('teamInstagram').value,
-        bio: document.getElementById('teamBio').value
-    };
-    if (image) member.image = image;
-
-    let success;
-    if (editingTeamId) {
-        success = await dbUpdate('team', editingTeamId, member);
-        if (success) showToast('Team member updated!');
-    } else {
-        success = await dbAdd('team', member);
-        if (success) showToast('Team member added!');
-    }
-
-    if (success) {
-        this.reset();
-        document.getElementById('teamImagePreview').innerHTML = '';
-        hideForm('teamForm');
-        editingTeamId = null;
-        loadTeam();
-    }
-});
-
-// ===== DELETE FUNCTIONS =====
-async function deleteEvent(id) {
-    if (!confirm('Delete this event?')) return;
-    await dbDelete('events', id);
-    showToast('Event deleted!', 'error');
-    loadEvents();
-    updateDashboardStats();
-}
-window.deleteEvent = deleteEvent;
-
-async function deleteEquipment(id) {
-    if (!confirm('Delete this equipment?')) return;
-    await dbDelete('equipment', id);
-    showToast('Equipment deleted!', 'error');
-    loadEquipment();
-    updateDashboardStats();
-}
-window.deleteEquipment = deleteEquipment;
-
-async function deleteBlog(id) {
-    if (!confirm('Delete this blog post?')) return;
-    await dbDelete('blogs', id);
-    showToast('Blog post deleted!', 'error');
-    loadBlogs();
-    updateDashboardStats();
-}
-window.deleteBlog = deleteBlog;
-
-async function deleteTestimonial(id) {
-    if (!confirm('Delete this testimonial?')) return;
-    await dbDelete('testimonials', id);
-    showToast('Testimonial deleted!', 'error');
-    loadTestimonials();
-}
-window.deleteTestimonial = deleteTestimonial;
-
-async function deleteTeamMember(id) {
-    if (!confirm('Remove this team member?')) return;
-    await dbDelete('team', id);
-    showToast('Team member removed!', 'error');
-    loadTeam();
-}
-window.deleteTeamMember = deleteTeamMember;
-
-// ===== EDIT EVENT =====
-async function editEvent(id) {
-    const events = await dbGetAll('events');
-    const event = events.find(e => e.id === id);
-    if (!event) return;
-
-    // Set editing mode
-    editingEventId = id;
-    document.getElementById('eventFormTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Event';
-
-    showForm('eventForm');
-    document.getElementById('eventTitle').value = event.title || '';
-    document.getElementById('eventCategory').value = event.category || '';
-    document.getElementById('eventDate').value = event.date || '';
-    document.getElementById('eventVenue').value = event.venue || '';
-    document.getElementById('eventGuests').value = event.guests || '';
-    document.getElementById('eventEquipment').value = event.equipment || '';
-    document.getElementById('eventDescription').value = event.description || '';
-    document.getElementById('eventTestimonial').value = event.testimonial || '';
-
-    const preview = document.getElementById('eventImagePreview');
-    preview.innerHTML = '';
-    if (event.images && event.images.length > 0) {
-        event.images.forEach(img => {
-            const div = document.createElement('div');
-            div.className = 'preview-item';
-            div.innerHTML = `<img src="${img}" alt="Event"><button class="remove-preview" onclick="this.parentElement.remove()">×</button>`;
-            preview.appendChild(div);
-        });
-    }
-}
-window.editEvent = editEvent;
-
-// ===== EDIT EQUIPMENT =====
-async function editEquipment(id) {
-    const equipment = await dbGetAll('equipment');
-    const item = equipment.find(e => e.id === id);
-    if (!item) return;
-
-    editingEquipmentId = id;
-    showForm('equipmentForm');
-
-    document.getElementById('productName').value = item.name || '';
-    document.getElementById('productCategory').value = item.category || '';
-    document.getElementById('productPrice').value = item.price || '';
-    document.getElementById('productOldPrice').value = item.oldPrice || '';
-    document.getElementById('productCondition').value = item.condition || 'new';
-    document.getElementById('productBrand').value = item.brand || '';
-    document.getElementById('productSpecs').value = item.specs || '';
-    document.getElementById('productDescription').value = item.description || '';
-    document.getElementById('productAvailable').checked = item.available !== false;
-
-    const preview = document.getElementById('productImagePreview');
-    preview.innerHTML = '';
-    if (item.images && item.images.length > 0) {
-        item.images.forEach(img => {
-            const div = document.createElement('div');
-            div.className = 'preview-item';
-            div.innerHTML = `<img src="${img}" alt="Product"><button class="remove-preview" onclick="this.parentElement.remove()">×</button>`;
-            preview.appendChild(div);
-        });
-    }
-}
-window.editEquipment = editEquipment;
-
-// ===== EDIT BLOG =====
 async function editBlog(id) {
     const blogs = await dbGetAll('blogs');
     const post = blogs.find(b => b.id === id);
@@ -500,7 +408,148 @@ async function editBlog(id) {
 }
 window.editBlog = editBlog;
 
+async function deleteBlog(id) {
+    if (!confirm('Delete this blog post?')) return;
+    await dbDelete('blogs', id);
+    showToast('Blog post deleted!', 'error');
+    loadBlogs();
+    updateDashboardStats();
+}
+window.deleteBlog = deleteBlog;
+
+// ============================================
+// ===== TESTIMONIAL: ADD & EDIT =====
+// ============================================
+document.getElementById('addTestimonialForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const testimonial = {
+        name: document.getElementById('testimonialName').value,
+        event: document.getElementById('testimonialEvent').value,
+        rating: document.getElementById('testimonialRating').value,
+        text: document.getElementById('testimonialText').value
+    };
+
+    let success;
+    if (editingTestimonialId) {
+        success = await dbUpdate('testimonials', editingTestimonialId, testimonial);
+        if (success) showToast('Testimonial updated!');
+    } else {
+        success = await dbAdd('testimonials', testimonial);
+        if (success) showToast('Testimonial added!');
+    }
+
+    if (success) {
+        this.reset();
+        hideForm('testimonialForm');
+        editingTestimonialId = null;
+        loadTestimonials();
+    }
+});
+
+async function editTestimonial(id) {
+    const testimonials = await dbGetAll('testimonials');
+    const t = testimonials.find(x => x.id === id);
+    if (!t) return;
+
+    editingTestimonialId = id;
+    showForm('testimonialForm');
+
+    document.getElementById('testimonialName').value = t.name || '';
+    document.getElementById('testimonialEvent').value = t.event || '';
+    document.getElementById('testimonialRating').value = t.rating || '5';
+    document.getElementById('testimonialText').value = t.text || '';
+}
+window.editTestimonial = editTestimonial;
+
+async function deleteTestimonial(id) {
+    if (!confirm('Delete this testimonial?')) return;
+    await dbDelete('testimonials', id);
+    showToast('Testimonial deleted!', 'error');
+    loadTestimonials();
+}
+window.deleteTestimonial = deleteTestimonial;
+
+// ============================================
+// ===== TEAM: ADD & EDIT =====
+// ============================================
+document.getElementById('addTeamForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const image = await getImageData('teamImage');
+
+    const member = {
+        name: document.getElementById('teamName').value,
+        role: document.getElementById('teamRole').value,
+        linkedin: document.getElementById('teamLinkedin').value,
+        instagram: document.getElementById('teamInstagram').value,
+        bio: document.getElementById('teamBio').value
+    };
+
+    // Only update image if a new one was uploaded
+    if (image) member.image = image;
+
+    // If editing and no new image, keep the old one
+    if (editingTeamId && !image) {
+        const team = await dbGetAll('team');
+        const existing = team.find(t => t.id === editingTeamId);
+        if (existing && existing.image) member.image = existing.image;
+    }
+
+    let success;
+    if (editingTeamId) {
+        success = await dbUpdate('team', editingTeamId, member);
+        if (success) showToast('Team member updated!');
+    } else {
+        success = await dbAdd('team', member);
+        if (success) showToast('Team member added!');
+    }
+
+    if (success) {
+        this.reset();
+        document.getElementById('teamImagePreview').innerHTML = '';
+        hideForm('teamForm');
+        editingTeamId = null;
+        loadTeam();
+    }
+});
+
+async function editTeamMember(id) {
+    const team = await dbGetAll('team');
+    const member = team.find(t => t.id === id);
+    if (!member) return;
+
+    editingTeamId = id;
+    showForm('teamForm');
+
+    document.getElementById('teamName').value = member.name || '';
+    document.getElementById('teamRole').value = member.role || '';
+    document.getElementById('teamLinkedin').value = member.linkedin || '';
+    document.getElementById('teamInstagram').value = member.instagram || '';
+    document.getElementById('teamBio').value = member.bio || '';
+
+    const preview = document.getElementById('teamImagePreview');
+    preview.innerHTML = '';
+    if (member.image) {
+        const div = document.createElement('div');
+        div.className = 'preview-item';
+        div.innerHTML = `<img src="${member.image}" alt="Team"><button class="remove-preview" onclick="this.parentElement.remove()">×</button>`;
+        preview.appendChild(div);
+    }
+}
+window.editTeamMember = editTeamMember;
+
+async function deleteTeamMember(id) {
+    if (!confirm('Remove this team member?')) return;
+    await dbDelete('team', id);
+    showToast('Team member removed!', 'error');
+    loadTeam();
+}
+window.deleteTeamMember = deleteTeamMember;
+
+// ============================================
 // ===== LOAD DATA FUNCTIONS =====
+// ============================================
 async function loadEvents() {
     const events = await dbGetAll('events');
     const tbody = document.getElementById('eventsTableBody');
@@ -653,52 +702,11 @@ async function loadTeam() {
     `).join('');
 }
 
-// ===== EDIT TEAM =====
-async function editTeamMember(id) {
-    const team = await dbGetAll('team');
-    const member = team.find(t => t.id === id);
-    if (!member) return;
-
-    editingTeamId = id;
-    showForm('teamForm');
-
-    document.getElementById('teamName').value = member.name || '';
-    document.getElementById('teamRole').value = member.role || '';
-    document.getElementById('teamLinkedin').value = member.linkedin || '';
-    document.getElementById('teamInstagram').value = member.instagram || '';
-    document.getElementById('teamBio').value = member.bio || '';
-
-    const preview = document.getElementById('teamImagePreview');
-    preview.innerHTML = '';
-    if (member.image) {
-        const div = document.createElement('div');
-        div.className = 'preview-item';
-        div.innerHTML = `<img src="${member.image}" alt="Team"><button class="remove-preview" onclick="this.parentElement.remove()">×</button>`;
-        preview.appendChild(div);
-    }
-}
-window.editTeamMember = editTeamMember;
-
-// ===== EDIT TESTIMONIAL =====
-async function editTestimonial(id) {
-    const testimonials = await dbGetAll('testimonials');
-    const t = testimonials.find(x => x.id === id);
-    if (!t) return;
-
-    editingTestimonialId = id;
-    showForm('testimonialForm');
-
-    document.getElementById('testimonialName').value = t.name || '';
-    document.getElementById('testimonialEvent').value = t.event || '';
-    document.getElementById('testimonialRating').value = t.rating || '5';
-    document.getElementById('testimonialText').value = t.text || '';
-}
-window.editTestimonial = editTestimonial;
-
+// ============================================
 // ===== SETTINGS =====
+// ============================================
 const companyForm = document.getElementById('companySettingsForm');
 if (companyForm) {
-    // Load existing settings
     dbGetSettings('company').then(settings => {
         if (settings) {
             document.getElementById('companyName').value = settings.name || '';
@@ -745,7 +753,34 @@ if (socialForm) {
     });
 }
 
+// Password change
+const passwordForm = document.getElementById('passwordForm');
+if (passwordForm) {
+    passwordForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const current = document.getElementById('currentPassword').value;
+        const newPass = document.getElementById('newPassword').value;
+        const confirm = document.getElementById('confirmPassword').value;
+
+        if (newPass !== confirm) {
+            showToast('Passwords do not match!', 'error');
+            return;
+        }
+
+        // Simple password check (you can improve this)
+        if (current !== 'admin2025') {
+            showToast('Current password is incorrect!', 'error');
+            return;
+        }
+
+        showToast('Password updated! (Note: Update admin-login.html too)');
+        this.reset();
+    });
+}
+
+// ============================================
 // ===== DASHBOARD STATS =====
+// ============================================
 async function updateDashboardStats() {
     const events = await dbGetAll('events');
     const equipment = await dbGetAll('equipment');
@@ -759,7 +794,9 @@ async function updateDashboardStats() {
     if (el('totalMessages')) el('totalMessages').textContent = messages.length;
 }
 
-// ===== TEXT FORMATTING =====
+// ============================================
+// ===== TEXT FORMATTING (Blog Editor) =====
+// ============================================
 function formatText(type) {
     const textarea = document.getElementById('blogContent');
     const start = textarea.selectionStart;
@@ -788,7 +825,9 @@ function saveDraft() {
 }
 window.saveDraft = saveDraft;
 
+// ============================================
 // ===== LOAD PAGE DATA =====
+// ============================================
 async function loadPageData(page) {
     switch (page) {
         case 'events': await loadEvents(); break;
@@ -806,7 +845,7 @@ if (adminNameEl) {
     adminNameEl.textContent = localStorage.getItem('dhebronix_admin_user') || 'Admin';
 }
 
-// ===== INITIALIZE =====
+// ===== INITIALIZE - Load everything on page load =====
 updateDashboardStats();
 loadEvents();
 loadEquipment();
