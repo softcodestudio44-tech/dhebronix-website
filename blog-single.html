@@ -298,21 +298,34 @@
             }
 
             // Update share buttons with actual URLs
-            const pageUrl = encodeURIComponent(window.location.href);
-            const pageTitle = encodeURIComponent(post.title);
+            // Update share buttons with actual working URLs
+            const pageUrl = window.location.href;
+            const pageTitle = post.title;
 
-            const fbShare = document.getElementById('shareFacebook');
-            if (fbShare) fbShare.href = `https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`;
-
-            const twShare = document.getElementById('shareTwitter');
-            if (twShare) twShare.href = `https://twitter.com/intent/tweet?url=${pageUrl}&text=${pageTitle}`;
-
-            const waShare = document.getElementById('shareWhatsapp');
-            if (waShare) waShare.href = `https://wa.me/?text=${pageTitle}%20${pageUrl}`;
-
-            const liShare = document.getElementById('shareLinkedin');
-            if (liShare) liShare.href = `https://www.linkedin.com/sharing/share-offsite/?url=${pageUrl}`;
-
+            const shareContainer = document.querySelector('.share-buttons');
+            if (shareContainer) {
+                shareContainer.innerHTML = `
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}" 
+                       target="_blank" rel="noopener noreferrer" class="share-btn facebook" 
+                       onclick="window.open(this.href,'share','width=600,height=400');return false;">
+                        <i class="fab fa-facebook-f"></i> Facebook
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(pageTitle)}" 
+                       target="_blank" rel="noopener noreferrer" class="share-btn twitter"
+                       onclick="window.open(this.href,'share','width=600,height=400');return false;">
+                        <i class="fab fa-twitter"></i> Twitter
+                    </a>
+                    <a href="https://wa.me/?text=${encodeURIComponent(pageTitle + ' ' + pageUrl)}" 
+                       target="_blank" rel="noopener noreferrer" class="share-btn whatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}" 
+                       target="_blank" rel="noopener noreferrer" class="share-btn linkedin"
+                       onclick="window.open(this.href,'share','width=600,height=400');return false;">
+                        <i class="fab fa-linkedin"></i> LinkedIn
+                    </a>
+                `;
+            }
             // Load recent posts in sidebar
             const recentWidget = document.getElementById('recentPostsWidget');
             if (recentWidget) {
