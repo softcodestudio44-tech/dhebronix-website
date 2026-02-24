@@ -101,20 +101,24 @@ async function loadEventsPageData() {
         const sorted = [...events].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
         const icons = { wedding:'fa-heart', corporate:'fa-building', concert:'fa-music', church:'fa-church', party:'fa-birthday-cake', other:'fa-calendar' };
 
-        grid.innerHTML = sorted.map(event => {
+        grid.innerHTML = sorted.map((event, index) => {
             const image = (event.images && event.images[0]) || 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600';
             const date = event.date ? new Date(event.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '';
             const icon = icons[event.category] || 'fa-calendar';
             const equipTags = event.equipment ? event.equipment.split(',').map(e => `<span class="equip-tag">${e.trim()}</span>`).join('') : '';
+            
             return `
-                <div class="portfolio-card" data-category="${event.category || 'other'}">
+                <div class="portfolio-card" data-category="${event.category || 'other'}" data-index="${index}">
                     <div class="portfolio-image">
-                        <img src="${image}" alt="${event.title}" loading="lazy">
+                        <img src="${image}" alt="${event.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600'">
                         <div class="portfolio-overlay">
                             <div class="portfolio-details">
                                 <span class="portfolio-category"><i class="fas ${icon}"></i> ${event.category || 'Event'}</span>
                                 <h3>${event.title}</h3>
                                 <p><i class="fas fa-map-marker-alt"></i> ${event.venue || ''}</p>
+                                <button class="portfolio-expand" onclick="event.stopPropagation(); openEventModal(${index})">
+                                    <i class="fas fa-expand"></i> View Details
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -131,6 +135,9 @@ async function loadEventsPageData() {
             `;
         }).join('');
 
+        // Store for modal use
+        window.eventsData = sorted;
+        
         // Re-setup filters
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -152,24 +159,46 @@ async function loadEquipmentPageData() {
     try {
         const equipment = await dbGetAll('equipment');
         const grid = document.querySelector('.products-grid');
-        if (!grid || equipment.length === 0) return;
+        if (!grid) return;
 
         const settings = await dbGetSettings('company');
         const whatsappNum = settings ? (settings.whatsapp || '2348037280457').replace(/[^0-9]/g, '') : '2348037280457';
+        
+        // Filter available items
         const available = equipment.filter(item => item.available !== false);
+        
+        if (available.length === 0) {
+            grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#888;padding:40px;">No equipment available.</p>';
+            return;
+        }
 
-        grid.innerHTML = available.map(item => {
-            const image = (item.images && item.images[0]) || `https://via.placeholder.com/400x300/1a1a1a/8B1A1A?text=${encodeURIComponent(item.name)}`;
+        grid.innerHTML = available.map((item, index) => {
+            // FIX: Properly get image from Firebase data
+            let imageUrl = 'https://via.placeholder.com/400x300/1a1a1a/8B1A1A?text=No+Image';
+            
+            if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+                imageUrl = item.images[0];
+            } else if (item.image && typeof item.image === 'string') {
+                imageUrl = item.image;
+            }
+            
             const price = Number(item.price || 0).toLocaleString();
             const oldPrice = item.oldPrice ? Number(item.oldPrice).toLocaleString() : '';
             const whatsappMsg = encodeURIComponent(`I'm interested in ${item.name} (₦${price})`);
+            const conditionClass = item.condition === 'new' ? 'new' : 'used';
+            
             return `
-                <div class="product-card" data-category="${item.category || 'other'}">
-                    <div class="product-image">
-                        <img src="${image}" alt="${item.name}" loading="lazy">
-                        <span class="product-badge ${item.condition === 'new' ? 'new' : 'used'}">${item.condition || 'New'}</span>
+                <div class="product-card" data-category="${item.category || 'other'}" data-index="${index}">
+                    <div class="product-image" onclick="openEquipmentModal(${index})">
+                        <img src="${imageUrl}" 
+                             alt="${item.name}" 
+                             loading="lazy"
+                             onerror="this.onerror=null;this.src='https://via.placeholder.com/400x300/1a1a1a/8B1A1A?text=${encodeURIComponent(item.name)}';">
+                        <span class="product-badge ${conditionClass}">${item.condition ? item.condition.toUpperCase() : 'NEW'}</span>
                         <div class="product-actions">
-                            <a href="https://wa.me/${whatsappNum}?text=${whatsappMsg}" target="_blank" class="product-inquiry"><i class="fab fa-whatsapp"></i></a>
+                            <a href="https://wa.me/${whatsappNum}?text=${whatsappMsg}" target="_blank" class="product-inquiry" onclick="event.stopPropagation()">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
                         </div>
                     </div>
                     <div class="product-info">
@@ -180,13 +209,18 @@ async function loadEquipmentPageData() {
                             ${oldPrice ? `<span class="price-old">₦${oldPrice}</span>` : ''}
                             <span class="price">₦${price}</span>
                         </div>
-                        <a href="https://wa.me/${whatsappNum}?text=${whatsappMsg}" target="_blank" class="btn btn-product"><i class="fab fa-whatsapp"></i> Inquire Now</a>
+                        <a href="https://wa.me/${whatsappNum}?text=${whatsappMsg}" target="_blank" class="btn btn-product" onclick="event.stopPropagation()">
+                            <i class="fab fa-whatsapp"></i> Inquire Now
+                        </a>
                     </div>
                 </div>
             `;
         }).join('');
 
-        // Re-setup filters
+        // Store data for modal use
+        window.equipmentData = available;
+        
+        // Re-attach filter handlers
         document.querySelectorAll('.equip-filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.equip-filter-btn').forEach(b => b.classList.remove('active'));
@@ -197,8 +231,9 @@ async function loadEquipmentPageData() {
                 });
             });
         });
+        
     } catch (error) {
-        console.log('Using default equipment content');
+        console.error('Error loading equipment:', error);
     }
 }
 
@@ -362,184 +397,5 @@ async function loadSiteSettings() {
         }
     } catch (error) {
         console.log('Using default settings');
-    }
-}
-// ===== IMAGE CACHE FIX =====
-const imageCache = new Map();
-
-function getCachedImage(url, fallback) {
-    if (!url || url === '') return fallback;
-    if (imageCache.has(url)) return imageCache.get(url);
-    imageCache.set(url, url);
-    return url;
-}
-
-// ===== UPDATED LOAD FUNCTIONS WITH CACHE =====
-
-async function loadEventsPageData() {
-    try {
-        const events = await dbGetAll('events');
-        const grid = document.querySelector('.events-portfolio-grid');
-        if (!grid || events.length === 0) return;
-
-        const sorted = [...events].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-        const icons = { wedding:'fa-heart', corporate:'fa-building', concert:'fa-music', church:'fa-church', party:'fa-birthday-cake', other:'fa-calendar' };
-
-        grid.innerHTML = sorted.map((event, index) => {
-            const image = getCachedImage(
-                event.images && event.images[0], 
-                'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600'
-            );
-            const date = event.date ? new Date(event.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '';
-            const icon = icons[event.category] || 'fa-calendar';
-            const equipTags = event.equipment ? event.equipment.split(',').slice(0, 3).map(e => `<span class="equip-tag">${e.trim()}</span>`).join('') : '';
-            
-            return `
-                <div class="portfolio-card" data-category="${event.category || 'other'}" data-index="${index}">
-                    <div class="portfolio-image">
-                        <img src="${image}" alt="${event.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600'">
-                        <div class="portfolio-overlay">
-                            <div class="portfolio-details">
-                                <span class="portfolio-category"><i class="fas ${icon}"></i> ${event.category || 'Event'}</span>
-                                <h3>${event.title}</h3>
-                                <p><i class="fas fa-map-marker-alt"></i> ${event.venue || ''}</p>
-                                <button class="portfolio-expand" onclick="event.stopPropagation(); openEventModal(${index})">
-                                    <i class="fas fa-expand"></i> View Details
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="portfolio-info">
-                        <h3>${event.title}</h3>
-                        <div class="portfolio-meta">
-                            <span><i class="fas fa-calendar"></i> ${date}</span>
-                            <span><i class="fas fa-map-marker-alt"></i> ${(event.venue || '').split(',')[0]}</span>
-                            ${event.guests ? `<span><i class="fas fa-users"></i> ${event.guests} Guests</span>` : ''}
-                        </div>
-                        <div class="portfolio-equipment">${equipTags}</div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        // Store for modal use
-        window.eventsData = sorted;
-        
-    } catch (error) {
-        console.log('Using default events content');
-    }
-}
-
-async function loadEquipmentPageData() {
-    try {
-        const equipment = await dbGetAll('equipment');
-        const grid = document.querySelector('.products-grid');
-        if (!grid || equipment.length === 0) return;
-
-        const settings = await dbGetSettings('company');
-        const whatsappNum = settings ? (settings.whatsapp || '2348037280457').replace(/[^0-9]/g, '') : '2348037280457';
-        const available = equipment.filter(item => item.available !== false);
-
-        grid.innerHTML = available.map((item, index) => {
-            const image = getCachedImage(
-                item.images && item.images[0],
-                `https://via.placeholder.com/400x300/1a1a1a/8B1A1A?text=${encodeURIComponent(item.name)}`
-            );
-            const price = Number(item.price || 0).toLocaleString();
-            const oldPrice = item.oldPrice ? Number(item.oldPrice).toLocaleString() : '';
-            const whatsappMsg = encodeURIComponent(`I'm interested in ${item.name} (₦${price})`);
-            
-            return `
-                <div class="product-card" data-category="${item.category || 'other'}" data-index="${index}" onclick="openEquipmentModal(${index})">
-                    <div class="product-image">
-                        <img src="${image}" alt="${item.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300/1a1a1a/8B1A1A?text=No+Image'">
-                        <span class="product-badge ${item.condition === 'new' ? 'new' : 'used'}">${item.condition || 'New'}</span>
-                        <div class="product-actions" onclick="event.stopPropagation()">
-                            <a href="https://wa.me/${whatsappNum}?text=${whatsappMsg}" target="_blank" class="product-inquiry"><i class="fab fa-whatsapp"></i></a>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <span class="product-category">${item.category || ''}</span>
-                        <h3>${item.name}</h3>
-                        <p class="product-specs">${item.specs || ''}</p>
-                        <div class="product-price">
-                            ${oldPrice ? `<span class="price-old">₦${oldPrice}</span>` : ''}
-                            <span class="price">₦${price}</span>
-                        </div>
-                        <a href="https://wa.me/${whatsappNum}?text=${whatsappMsg}" target="_blank" class="btn btn-product" onclick="event.stopPropagation()">
-                            <i class="fab fa-whatsapp"></i> Inquire Now
-                        </a>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        // Store for modal use
-        window.equipmentData = available;
-        
-    } catch (error) {
-        console.log('Using default equipment content');
-    }
-}
-
-async function loadBlogPageData() {
-    try {
-        const blogs = await dbGetAll('blogs');
-        const postsContainer = document.querySelector('.blog-posts');
-        if (!postsContainer || blogs.length === 0) return;
-
-        const published = blogs.filter(b => b.status === 'published');
-        const sorted = [...published].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-        if (sorted.length === 0) return;
-
-        const featured = sorted[0];
-        const rest = sorted.slice(1);
-        const featuredDate = featured.date ? new Date(featured.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
-        const featuredImage = getCachedImage(featured.image, 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800');
-
-        let html = `
-            <article class="blog-card featured">
-                <div class="blog-image">
-                    <img src="${featuredImage}" alt="${featured.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800'">
-                    <span class="blog-category">${featured.category || 'General'}</span>
-                </div>
-                <div class="blog-content">
-                    <div class="blog-meta">
-                        <span><i class="fas fa-calendar"></i> ${featuredDate}</span>
-                        <span><i class="fas fa-user"></i> ${featured.author || 'DHEBRONIX Team'}</span>
-                    </div>
-                    <h2><a href="blog-single.html?id=${featured.id}">${featured.title}</a></h2>
-                    <p>${featured.excerpt || (featured.content || '').substring(0, 200)}...</p>
-                    <a href="blog-single.html?id=${featured.id}" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </article>
-        `;
-
-        if (rest.length > 0) {
-            html += '<div class="blog-grid">';
-            html += rest.map(post => {
-                const postDate = post.date ? new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-                const postImage = getCachedImage(post.image, 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600');
-                return `
-                    <article class="blog-card">
-                        <div class="blog-image">
-                            <img src="${postImage}" alt="${post.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600'">
-                            <span class="blog-category">${post.category || 'General'}</span>
-                        </div>
-                        <div class="blog-content">
-                            <div class="blog-meta"><span><i class="fas fa-calendar"></i> ${postDate}</span></div>
-                            <h3><a href="blog-single.html?id=${post.id}">${post.title}</a></h3>
-                            <p>${post.excerpt || (post.content || '').substring(0, 120)}...</p>
-                            <a href="blog-single.html?id=${post.id}" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </article>
-                `;
-            }).join('');
-            html += '</div>';
-        }
-
-        postsContainer.innerHTML = html;
-    } catch (error) {
-        console.log('Using default blog content');
     }
 }
