@@ -289,12 +289,118 @@
 
     <script src="js/script.js"></script>
     <script type="module" src="js/site-data.js"></script>
+    <!-- EQUIPMENT MODAL -->
+<div class="event-modal" id="equipmentModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeEquipmentModal()"><i class="fas fa-times"></i></button>
+        <div class="modal-body" id="equipmentModalBody">
+            <!-- Content loaded by JavaScript -->
+        </div>
+    </div>
+</div>
+
+<script>
+// Equipment data from admin - will be replaced by Firebase data
+let equipmentData = [];
+
+// Load equipment from Firebase and store for modal use
+async function loadEquipmentForModal() {
+    try {
+        const { dbGetAll } = await import('./js/firebase-config.js');
+        equipmentData = await dbGetAll('equipment');
+        
+        // Add click handlers to all product cards
+        document.querySelectorAll('.product-card').forEach((card, index) => {
+            card.style.cursor = 'pointer';
+            card.onclick = function(e) {
+                // Don't open modal if clicking the WhatsApp button
+                if (e.target.closest('.btn-product') || e.target.closest('.product-inquiry')) {
+                    return;
+                }
+                openEquipmentModal(index);
+            };
+        });
+    } catch (error) {
+        console.log('Using default equipment data');
+    }
+}
+
+function openEquipmentModal(index) {
+    const item = equipmentData[index];
+    if (!item) return;
+    
+    const modal = document.getElementById('equipmentModal');
+    const body = document.getElementById('equipmentModalBody');
+    
+    const conditionClass = item.condition === 'new' ? 'available' : 'draft';
+    const oldPriceDisplay = item.oldPrice ? `<span class="price-old" style="font-size:20px;margin-right:10px;">₦${Number(item.oldPrice).toLocaleString()}</span>` : '';
+    
+    body.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;max-height:80vh;">
+            <div style="background:#0a0a0a;display:flex;align-items:center;justify-content:center;padding:20px;">
+                <img src="${item.images && item.images[0] ? item.images[0] : 'https://via.placeholder.com/400x400/1a1a1a/8B1A1A?text=No+Image'}" 
+                     alt="${item.name}" 
+                     style="max-width:100%;max-height:400px;object-fit:contain;border-radius:10px;">
+            </div>
+            <div style="padding:40px;overflow-y:auto;">
+                <span class="status-badge ${conditionClass}" style="margin-bottom:15px;display:inline-block;">
+                    ${item.condition ? item.condition.toUpperCase() : 'NEW'}
+                </span>
+                <h2 style="font-family:'Orbitron',sans-serif;font-size:28px;margin-bottom:10px;color:#fff;">${item.name}</h2>
+                <p style="color:#C41E3A;font-size:14px;text-transform:uppercase;letter-spacing:1px;margin-bottom:20px;">${item.category || 'Equipment'}</p>
+                
+                <div style="margin-bottom:25px;">
+                    ${oldPriceDisplay}
+                    <span style="font-family:'Orbitron',sans-serif;font-size:32px;color:#C41E3A;font-weight:700;">₦${Number(item.price || 0).toLocaleString()}</span>
+                </div>
+                
+                ${item.brand ? `<p style="margin-bottom:10px;color:#888;"><strong style="color:#fff;">Brand:</strong> ${item.brand}</p>` : ''}
+                ${item.specs ? `<p style="margin-bottom:15px;color:#888;"><strong style="color:#fff;">Specifications:</strong> ${item.specs}</p>` : ''}
+                
+                <div style="background:#111;border:1px solid #222;border-radius:10px;padding:20px;margin:20px 0;">
+                    <h4 style="margin-bottom:10px;color:#C41E3A;">Description</h4>
+                    <p style="color:#ccc;line-height:1.8;font-size:14px;">${item.description || 'No description available.'}</p>
+                </div>
+                
+                <div style="display:flex;gap:15px;margin-top:25px;">
+                    <a href="https://wa.me/2348037280457?text=I'm interested in ${encodeURIComponent(item.name)} (₦${Number(item.price || 0).toLocaleString()})" 
+                       target="_blank" 
+                       class="btn btn-primary" 
+                       style="flex:1;justify-content:center;">
+                        <i class="fab fa-whatsapp"></i> Inquire on WhatsApp
+                    </a>
+                    <button onclick="closeEquipmentModal()" class="btn btn-outline" style="flex:0.5;justify-content:center;">
+                        Close
+                    </button>
+                </div>
+                
+                ${item.available === false ? '<p style="color:#e74c3c;margin-top:15px;text-align:center;"><i class="fas fa-times-circle"></i> Currently Sold Out</p>' : ''}
+            </div>
+        </div>
+    `;
+    
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEquipmentModal() {
+    const modal = document.getElementById('equipmentModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// Close on outside click
+document.getElementById('equipmentModal').addEventListener('click', (e) => {
+    if (e.target.id === 'equipmentModal') closeEquipmentModal();
+});
+
+// Close on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeEquipmentModal();
+});
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', loadEquipmentForModal);
+</script>
 </body>
 </html>
-<!-- Equipment Detail Modal -->
-
-  
-    &times;
-    Brand:Condition:Price:Description:Specifications:
-  <!-- ...card summary...-->
-  View Details
