@@ -328,3 +328,12 @@ document.querySelectorAll('.nav-links a').forEach(link => {
         link.classList.add('active');
     }
 });
+// ===== HIDE PRELOADER =====
+window.addEventListener('load', function() {
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+        setTimeout(() => {
+            preloader.classList.add('hidden');
+        }, 500);
+    }
+});
